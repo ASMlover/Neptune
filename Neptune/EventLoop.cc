@@ -48,8 +48,7 @@ EventLoop::EventLoop(void)
   , poller_(Poller::get_poller(this))
   , timer_queue_(new TimerQueue(this))
   , wakeup_(new WakeupSignaler())
-  , wakeup_channel_(new Channel(this, wakeup_->get_reader()))
-{
+  , wakeup_channel_(new Channel(this, wakeup_->get_reader())) {
   CHAOSLOG_DEBUG << "EventLoop::EventLoop - created " << this << " in thread " << tid_;
   if (t_loopthread)
     CHAOSLOG_SYSFATAL << "EventLoop::EventLoop - another EventLoop " << t_loopthread << " exists in thread " << tid_;
