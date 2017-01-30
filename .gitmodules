@@ -1,0 +1,3 @@
+[submodule "External/Chaos"]
+	path = External/Chaos
+	url = https://github.com/ASMlover/Chaos.git
