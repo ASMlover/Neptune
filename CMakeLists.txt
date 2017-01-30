@@ -86,7 +86,7 @@ endif()
 message(STATUS "`NeptunePROJ` CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/../../../Chaos)
+include_directories(${PROJECT_SOURCE_DIR}/External/Chaos)
 add_subdirectory(Neptune)
 if (NEPTUNE_BUILD_TEST)
   # add_subdirectory(Tests)
