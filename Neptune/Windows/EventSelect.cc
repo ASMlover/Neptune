@@ -94,12 +94,12 @@ void EventSelect::FdsEntity::destroy(void) {
 bool EventSelect::FdsEntity::resize(int new_fdcount) {
   std::size_t bytes = sizeof(FdSet_t) + (new_fdcount - 1) * sizeof(int);
 
-  if (!(read_fds = (FdSet_t*)realloc(read_fds, bytes)))
+  if ((read_fds = (FdSet_t*)realloc(read_fds, bytes)) == nullptr)
     return false;
   do {
-    if (!(write_fds = (FdSet_t*)realloc(write_fds, bytes)))
+    if ((write_fds = (FdSet_t*)realloc(write_fds, bytes)) == nullptr)
       break;
-    if (!(error_fds = (FdSet_t*)realloc(error_fds, bytes)))
+    if ((error_fds = (FdSet_t*)realloc(error_fds, bytes)) == nullptr)
       break;
 
     return true;
