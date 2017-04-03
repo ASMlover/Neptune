@@ -51,7 +51,7 @@ message(STATUS "`NeptunePROJ` CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set building options
-option(NEPTUNE_BUILD_TEST "build Neptune examples and unittests" ON)
+option(NEPTUNE_BUILD_TEST "build Neptune examples and unittests" OFF)
 option(NEPTUNE_LINK_CHAOS "build Neptune need link `libchaos.a`" ON)
 
 # set building CMAKE_CXX_FLAGS
@@ -65,10 +65,13 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     /D_CRT_SECURE_NO_WARNINGS
     /D_CRT_NONSTDC_NO_WARNINGS
     /wd4091
+    /wd4100
+    /wd4127
     /wd4244
+    /wd4389 # fixed FD_CLR signed/unsigned not matched
     /wd4800
     /wd4996)
-  set(CMAKE_CXX_FLAGS "/W3 /GF /GS /Gs /Zi /EHsc")
+  set(CMAKE_CXX_FLAGS "/W4 /GF /GS /Gs /Zi /EHsc")
 else()
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.1")
@@ -82,12 +85,13 @@ else()
     endif()
   endif()
 
-  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-g -O2 -std=c++11 -Wall -Werror")
+  set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-g -O2 -std=c++1y -Wall -Werror")
 endif()
 message(STATUS "`NeptunePROJ` CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/External/Chaos)
+add_subdirectory(External/Chaos/Chaos)
 add_subdirectory(Neptune)
 if (NEPTUNE_BUILD_TEST)
   # add_subdirectory(Tests)
