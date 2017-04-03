@@ -52,7 +52,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # set building options
 option(NEPTUNE_BUILD_TEST "build Neptune examples and unittests" OFF)
-option(NEPTUNE_LINK_CHAOS "build Neptune need link `libchaos.a`" ON)
+option(NEPTUNE_LINK_CHAOS "build Neptune need link `Chaos`" ON)
 
 # set building CMAKE_CXX_FLAGS
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
