@@ -67,9 +67,10 @@ Poller* Poller::get_poller(EventLoop* loop) {
   return new Neptune::EventEpoll(loop);
 # elif defined(CHAOS_DARWIN)
   return new Neptune::EventKqueue(loop);
+# else
+  return nullptr;
 # endif
 #endif
-  return nullptr;
 }
 
 }
