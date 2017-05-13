@@ -42,14 +42,16 @@ class EventEpoll : public Poller {
   int epollfd_{};
   std::vector<struct epoll_event> epoll_events_;
 
-  void fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const;
+  void fill_active_channels(
+      int nevents, std::vector<Channel*>& active_channels) const;
   void update(int operation, Channel* channel);
   static const char* operation_to_string(int operation);
 public:
   explicit EventEpoll(EventLoop* loop);
   virtual ~EventEpoll(void) override;
 
-  virtual Chaos::Timestamp poll(int timeout, std::vector<Channel*>& active_channels) override;
+  virtual Chaos::Timestamp poll(
+      int timeout, std::vector<Channel*>& active_channels) override;
   virtual void update_channel(Channel* channel) override;
   virtual void remove_channel(Channel* channel) override;
 };

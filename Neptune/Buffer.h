@@ -184,7 +184,8 @@ public:
   void ensure_writable_bytes(std::size_t n) {
     if (writable_bytes() < n)
       resize(n);
-    CHAOS_CHECK(writable_bytes() >= n, "Neptune::Buffer - writable bytes not enough");
+    CHAOS_CHECK(writable_bytes() >= n,
+        "Neptune::Buffer - writable bytes not enough");
   }
 
   void prepend(const void* buf, std::size_t len) {
@@ -295,7 +296,8 @@ private:
       buff_.resize(windex_ + bytes);
     }
     else {
-      CHAOS_CHECK(kCheapPrepend < rindex_, "reader index should begin after `kCheapPrepend`");
+      CHAOS_CHECK(kCheapPrepend < rindex_,
+          "reader index should begin after `kCheapPrepend`");
       std::size_t readable = readable_bytes();
       std::copy(begin() + rindex_, begin() + windex_, begin() + kCheapPrepend);
       rindex_ = kCheapPrepend;

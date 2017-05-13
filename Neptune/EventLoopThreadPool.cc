@@ -32,7 +32,8 @@
 
 namespace Neptune {
 
-EventLoopThreadPool::EventLoopThreadPool(EventLoop* base_loop, const std::string& name)
+EventLoopThreadPool::EventLoopThreadPool(
+    EventLoop* base_loop, const std::string& name)
   : base_loop_(base_loop)
   , name_(name) {
 }

@@ -50,8 +50,10 @@ class EventLoopThread : private Chaos::UnCopyable {
 
   void thread_callback(void);
 public:
-  EventLoopThread(const InitiateFunction& fn, const std::string& name = std::string());
-  EventLoopThread(InitiateFunction&& fn, const std::string& name = std::string());
+  EventLoopThread(
+      const InitiateFunction& fn, const std::string& name = std::string());
+  EventLoopThread(
+      InitiateFunction&& fn, const std::string& name = std::string());
   ~EventLoopThread(void);
   EventLoop* start_loop(void);
 };

@@ -48,7 +48,8 @@ public:
     : addr6_(addr6) {
   }
 
-  InetAddress(std::uint16_t port = 0, bool loopback_only = false, bool ipv6 = false);
+  InetAddress(
+      std::uint16_t port = 0, bool loopback_only = false, bool ipv6 = false);
   InetAddress(Chaos::StringPiece ip, std::uint16_t port, bool ipv6 = false);
   std::string get_host(void) const;
   std::string get_host_port(void) const;

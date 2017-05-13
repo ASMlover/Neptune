@@ -47,14 +47,19 @@ namespace Unexposed {
 
   void timerfd_read(int timerfd, Chaos::Timestamp now) {
     std::uint64_t how_many;
-    ssize_t n = Chaos::timer::kern_gettime(timerfd, sizeof(how_many), &how_many);
-    CHAOSLOG_TRACE << "Unexposed::timerfd_read - " << how_many << " at " << now.to_string();
-    if (n != sizeof(how_many))
-      CHAOSLOG_ERROR << "Unexposed::timerfd_read - reads " << n << " bytes instead of 8";
+    ssize_t n = Chaos::timer::kern_gettime(
+        timerfd, sizeof(how_many), &how_many);
+    CHAOSLOG_TRACE
+      << "Unexposed::timerfd_read - " << how_many << " at " << now.to_string();
+    if (n != sizeof(how_many)) {
+      CHAOSLOG_ERROR
+        << "Unexposed::timerfd_read - reads " << n << " bytes instead of 8";
+    }
   }
 
   void timerfd_reset(int timerfd, Chaos::Timestamp expired) {
-    std::int64_t msec = expired.msec_since_epoch() - Chaos::Timestamp::now().msec_since_epoch();
+    std::int64_t msec =
+      expired.msec_since_epoch() - Chaos::Timestamp::now().msec_since_epoch();
     if (msec < 100)
       msec = 100;
 
@@ -68,7 +73,8 @@ TimerQueue::TimerQueue(EventLoop* loop)
   , timerfd_(Unexposed::timerfd_create())
   , timerfd_channel_(loop_, timerfd_) {
   if (timerfd_ > 0) {
-    timerfd_channel_.bind_read_functor(std::bind(&TimerQueue::do_handle_read, this));
+    timerfd_channel_.bind_read_functor(
+        std::bind(&TimerQueue::do_handle_read, this));
     timerfd_channel_.enabled_reading();
   }
 }
@@ -84,13 +90,15 @@ TimerQueue::~TimerQueue(void) {
     delete t.second;
 }
 
-TimerID TimerQueue::add_timer(const Neptune::TimerCallback& fn, Chaos::Timestamp when, double interval) {
+TimerID TimerQueue::add_timer(
+    const Neptune::TimerCallback& fn, Chaos::Timestamp when, double interval) {
   Timer* timer = new Timer(fn, when, interval);
   loop_->run_in_loop(std::bind(&TimerQueue::add_timer_in_loop, this, timer));
   return TimerID(timer, timer->get_sequence());
 }
 
-TimerID TimerQueue::add_timer(Neptune::TimerCallback&& fn, Chaos::Timestamp when, double interval) {
+TimerID TimerQueue::add_timer(
+    Neptune::TimerCallback&& fn, Chaos::Timestamp when, double interval) {
   Timer* timer = new Timer(std::move(fn), when, interval);
   loop_->run_in_loop(std::bind(&TimerQueue::add_timer_in_loop, this, timer));
   return TimerID(timer, timer->get_sequence());
@@ -154,18 +162,22 @@ bool TimerQueue::insert(Timer* timer) {
 
   {
     auto result = timers_.insert(Entry(when, timer));
-    CHAOS_CHECK(result.second, "TimerQueue::insert - insert timer must be valid");
+    CHAOS_CHECK(result.second,
+        "TimerQueue::insert - insert timer must be valid");
   }
   {
-    auto result = active_timers_.insert(ActiveTimer(timer, timer->get_sequence()));
-    CHAOS_CHECK(result.second, "TimerQueue::insert - insert active timer must be valid");
+    auto result = active_timers_.insert(
+        ActiveTimer(timer, timer->get_sequence()));
+    CHAOS_CHECK(result.second,
+        "TimerQueue::insert - insert active timer must be valid");
   }
   CHAOS_CHECK(timers_.size() == active_timers_.size(), "");
 
   return changed;
 }
 
-void TimerQueue::reset(const std::vector<Entry>& expired_entries, Chaos::Timestamp now) {
+void TimerQueue::reset(
+    const std::vector<Entry>& expired_entries, Chaos::Timestamp now) {
   Chaos::Timestamp next_expired;
 
   for (auto& entry : expired_entries) {

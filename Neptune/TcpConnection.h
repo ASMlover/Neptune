@@ -43,7 +43,9 @@ class Channel;
 class EventLoop;
 class Socket;
 
-class TcpConnection : private Chaos::UnCopyable , public std::enable_shared_from_this<TcpConnection> {
+class TcpConnection
+  : private Chaos::UnCopyable
+  , public std::enable_shared_from_this<TcpConnection> {
   enum class NetLink {
     NETLINK_CONNECTING,
     NETLINK_CONNECTED,
@@ -145,12 +147,14 @@ public:
     write_complete_fn_ = std::move(fn);
   }
 
-  void bind_high_watermark_functor(const Neptune::HighWaterMarkCallback& fn, std::size_t watermark) {
+  void bind_high_watermark_functor(
+      const Neptune::HighWaterMarkCallback& fn, std::size_t watermark) {
     high_watermark_fn_ = fn;
     high_watermark_ = watermark;
   }
 
-  void bind_high_watermark_functor(Neptune::HighWaterMarkCallback&& fn, std::size_t watermark) {
+  void bind_high_watermark_functor(
+      Neptune::HighWaterMarkCallback&& fn, std::size_t watermark) {
     high_watermark_fn_ = std::move(fn);
     high_watermark_ = watermark;
   }

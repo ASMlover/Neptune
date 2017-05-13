@@ -35,16 +35,23 @@ namespace Neptune {
 
 static const in_addr_t kInAddrAny = INADDR_ANY;
 static const in_addr_t kInAddrLoopback = INADDR_LOOPBACK;
-static_assert(sizeof(InetAddress) == sizeof(struct sockaddr_in6), "InetAddress is same size as sockaddr_in6");
+static_assert(sizeof(InetAddress) == sizeof(struct sockaddr_in6),
+    "InetAddress is same size as sockaddr_in6");
 #if defined(CHAOS_DARWIN)
-  static_assert(offsetof(sockaddr_in, sin_family) == 1, "sin_family offset must be 1");
-  static_assert(offsetof(sockaddr_in6, sin6_family) == 1, "sin6_family offset must be 1");
+  static_assert(offsetof(sockaddr_in, sin_family) == 1,
+      "sin_family offset must be 1");
+  static_assert(offsetof(sockaddr_in6, sin6_family) == 1,
+      "sin6_family offset must be 1");
 #else
-  static_assert(offsetof(sockaddr_in, sin_family) == 0, "sin_family offset must be 0");
-  static_assert(offsetof(sockaddr_in6, sin6_family) == 0, "sin6_family offset must be 0");
+  static_assert(offsetof(sockaddr_in, sin_family) == 0,
+      "sin_family offset must be 0");
+  static_assert(offsetof(sockaddr_in6, sin6_family) == 0,
+      "sin6_family offset must be 0");
 #endif
-static_assert(offsetof(sockaddr_in, sin_port) == 2, "sin_port offset must be 2");
-static_assert(offsetof(sockaddr_in6, sin6_port) == 2, "sin6_port offset must be 2");
+static_assert(offsetof(sockaddr_in, sin_port) == 2,
+    "sin_port offset must be 2");
+static_assert(offsetof(sockaddr_in6, sin6_port) == 2,
+    "sin6_port offset must be 2");
 
 InetAddress::InetAddress(std::uint16_t port, bool loopback_only, bool ipv6) {
   static_assert(offsetof(InetAddress, addr_) == 0, "addr_ offset must be 0");
@@ -58,7 +65,8 @@ InetAddress::InetAddress(std::uint16_t port, bool loopback_only, bool ipv6) {
   else {
     memset(&addr_, 0, sizeof(addr_));
     addr_.sin_family = AF_INET;
-    addr_.sin_addr.s_addr = Neptune::h2n32(loopback_only ? kInAddrLoopback : kInAddrAny);
+    addr_.sin_addr.s_addr =
+      Neptune::h2n32(loopback_only ? kInAddrLoopback : kInAddrAny);
     addr_.sin_port = Neptune::h2n16(port);
   }
 }
@@ -101,7 +109,8 @@ bool InetAddress::resolve(Chaos::StringPiece hostname, InetAddress& result) {
 #if defined(CHAOS_LINUX)
   struct hostent hent{};
   int herrno = 0;
-  rc = gethostbyname_r(hostname.data(), &hent, t_resolve_buff, sizeof(t_resolve_buff), &hentp, &herrno);
+  rc = gethostbyname_r(hostname.data(),
+      &hent, t_resolve_buff, sizeof(t_resolve_buff), &hentp, &herrno);
 #else
   hentp = gethostbyname(hostname.data());
   if (!hentp)
@@ -109,7 +118,8 @@ bool InetAddress::resolve(Chaos::StringPiece hostname, InetAddress& result) {
 #endif
 
   if (rc == 0 && !hentp) {
-    CHAOS_CHECK(hentp->h_addrtype == AF_INET && hentp->h_length == sizeof(std::uint32_t),
+    CHAOS_CHECK(hentp->h_addrtype == AF_INET
+        && hentp->h_length == sizeof(std::uint32_t),
         "addrtype should be AF_INET and length should be sizeof(uint32_t)");
     result.addr_.sin_addr = *reinterpret_cast<struct in_addr*>(hentp->h_addr);
     return true;

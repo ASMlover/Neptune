@@ -39,7 +39,8 @@ namespace Neptune {
 static_assert(EPOLLIN == POLLIN, "`epoll` uses same flag value as `poll`");
 static_assert(EPOLLPRI == POLLPRI, "`epoll` uses same flag value as `poll`");
 static_assert(EPOLLOUT == POLLOUT, "`epoll` uses same flag value as `poll`");
-static_assert(EPOLLRDHUP == POLLRDHUP, "`epoll` uses same flag value as `poll`");
+static_assert(EPOLLRDHUP == POLLRDHUP,
+    "`epoll` uses same flag value as `poll`");
 static_assert(EPOLLERR == POLLERR, "`epoll` uses same flag value as `poll`");
 static_assert(EPOLLHUP == POLLHUP, "`epoll` uses same flag value as `poll`");
 
@@ -55,11 +56,14 @@ EventEpoll::~EventEpoll(void) {
   close(epollfd_);
 }
 
-Chaos::Timestamp EventEpoll::poll(int timeout, std::vector<Channel*>& active_channels) {
-  CHAOSLOG_TRACE << "EventEpoll::poll - fd total count is: " << channels_.size();
+Chaos::Timestamp EventEpoll::poll(
+    int timeout, std::vector<Channel*>& active_channels) {
+  CHAOSLOG_TRACE
+    << "EventEpoll::poll - fd total count is: " << channels_.size();
 
   int old_nevents = static_cast<int>(epoll_events_.size());
-  int nevents = epoll_wait(epollfd_, &*epoll_events_.begin(), old_nevents, timeout);
+  int nevents = epoll_wait(epollfd_,
+      &*epoll_events_.begin(), old_nevents, timeout);
   int saved_errno = errno;
   if (nevents > 0) {
     CHAOSLOG_TRACE << "EventEpoll::poll - " << nevents << " events happened";
@@ -84,7 +88,9 @@ void EventEpoll::update_channel(Channel* channel) {
 
   const int fd = channel->get_fd();
   const int index = channel->get_index();
-  CHAOSLOG_TRACE << "EventEpoll::update_channel - fd=" << fd << " events=" << channel->get_events();
+  CHAOSLOG_TRACE
+    << "EventEpoll::update_channel - fd=" << fd
+    << " events=" << channel->get_events();
 
   if (index == Poller::EVENT_NEW || index == Poller::EVENT_DEL) {
     if (index == Poller::EVENT_NEW) {
@@ -130,7 +136,8 @@ void EventEpoll::remove_channel(Channel* channel) {
   channel->set_index(Poller::EVENT_NEW);
 }
 
-void EventEpoll::fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const {
+void EventEpoll::fill_active_channels(
+    int nevents, std::vector<Channel*>& active_channels) const {
   assert(Chaos::implicit_cast<std::size_t>(nevents) <= epoll_events_.size());
   for (int i = 0; i < nevents; ++i) {
     Channel* channel = static_cast<Channel*>(epoll_events_[i].data.ptr);
@@ -141,17 +148,24 @@ void EventEpoll::fill_active_channels(int nevents, std::vector<Channel*>& active
 
 void EventEpoll::update(int operation, Channel* channel) {
   const int fd = channel->get_fd();
-  CHAOSLOG_TRACE << "EventEpoll::update - operation=" << operation_to_string(operation)
+  CHAOSLOG_TRACE
+    << "EventEpoll::update - operation=" << operation_to_string(operation)
     << " fd=" << fd << " events={" << channel->get_events() << "}";
 
   struct epoll_event event{};
   event.events = channel->get_events();
   event.data.ptr = channel;
   if (epoll_ctl(epollfd_, operation, fd, &event) < 0) {
-    if (operation == Poller::EVENT_DEL)
-      CHAOSLOG_SYSERR << "EventEpoll::update - operation=" << operation_to_string(operation) << " fd=" << fd;
-    else
-      CHAOSLOG_SYSFATAL << "EventEpoll::update - operation=" << operation_to_string(operation) << " fd=" << fd;
+    if (operation == Poller::EVENT_DEL) {
+      CHAOSLOG_SYSERR
+        << "EventEpoll::update - operation=" << operation_to_string(operation)
+        << " fd=" << fd;
+    }
+    else {
+      CHAOSLOG_SYSFATAL
+        << "EventEpoll::update - operation=" << operation_to_string(operation)
+        << " fd=" << fd;
+    }
   }
 }
 

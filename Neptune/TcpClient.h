@@ -57,7 +57,8 @@ class TcpClient : private Chaos::UnCopyable {
   void do_handle_new_connection(int sockfd);
   void remove_connection(const TcpConnectionPtr& conn);
 public:
-  TcpClient(EventLoop* loop, const InetAddress& server_addr, const std::string& name);
+  TcpClient(
+      EventLoop* loop, const InetAddress& server_addr, const std::string& name);
   ~TcpClient(void);
 
   void connect(void);

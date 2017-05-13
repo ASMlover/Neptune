@@ -57,12 +57,14 @@ class EventSelect : public Poller {
   FdsEntity fds_in_;
   FdsEntity fds_out_;
 
-  void fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const;
+  void fill_active_channels(
+      int nevents, std::vector<Channel*>& active_channels) const;
 public:
   explicit EventSelect(EventLoop* loop);
   virtual ~EventSelect(void) override;
 
-  virtual Chaos::Timestamp poll(int timeout, std::vector<Channel*>& active_channels) override;
+  virtual Chaos::Timestamp poll(
+      int timeout, std::vector<Channel*>& active_channels) override;
   virtual void update_channel(Channel* channel) override;
   virtual void remove_channel(Channel* channel) override;
 };

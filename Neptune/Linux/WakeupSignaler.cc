@@ -33,8 +33,10 @@ namespace Neptune {
 
 WakeupSignaler::WakeupSignaler(void) {
   open_signaler();
-  if (!is_opened())
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  if (!is_opened()) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  }
 }
 
 WakeupSignaler::~WakeupSignaler(void) {
@@ -51,8 +53,11 @@ int WakeupSignaler::get_signal(std::size_t len, void* buf) {
 
 void WakeupSignaler::open_signaler(void) {
   eventfd_ = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-  if (eventfd_ < 0)
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::open_signaler - create eventfd failed, eventfd_=" << eventfd_;
+  if (eventfd_ < 0) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::open_signaler - create eventfd failed, eventfd_="
+      << eventfd_;
+  }
 }
 
 void WakeupSignaler::close_signaler(void) {

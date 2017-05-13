@@ -31,7 +31,8 @@
 
 namespace Neptune {
 
-Acceptor::Acceptor(EventLoop* loop, const InetAddress& listen_addr, bool reuse_port)
+Acceptor::Acceptor(
+    EventLoop* loop, const InetAddress& listen_addr, bool reuse_port)
   : loop_(loop)
   , accept_socket_(NetOps::socket::open(listen_addr.get_family()))
   , accept_channel_(loop_, accept_socket_.get_fd()) {

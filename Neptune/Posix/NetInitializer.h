@@ -34,7 +34,8 @@ namespace Neptune {
 template <int Major = 0, int Minor = 0>
 class NetInitializer : private Chaos::UnCopyable {
   // fake network initializer for posix
-  static_assert(Major == 0 && Minor == 0, "should be a fake network initializer");
+  static_assert(Major == 0 && Minor == 0,
+      "should be a fake network initializer");
 };
 
 }

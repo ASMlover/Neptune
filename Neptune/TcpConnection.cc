@@ -46,7 +46,10 @@ void on_connection_default(const TcpConnectionPtr& conn) {
     << (conn->is_connected() ? "ON" : "OFF");
 }
 
-void on_message_default(const TcpConnectionPtr& /*conn*/, Buffer* buff, Chaos::Timestamp /*recvtime*/) {
+void on_message_default(
+    const TcpConnectionPtr& /*conn*/,
+    Buffer* buff,
+    Chaos::Timestamp /*recvtime*/) {
   buff->retrieve_all();
 }
 
@@ -60,23 +63,32 @@ TcpConnection::TcpConnection(EventLoop* loop, const std::string& name,
   , local_addr_(local_addr)
   , peer_addr_(peer_addr)
   , high_watermark_(kHighWatermark) {
-  channel_->bind_read_functor(std::bind(&TcpConnection::do_handle_read, this, std::placeholders::_1));
-  channel_->bind_write_functor(std::bind(&TcpConnection::do_handle_write, this));
-  channel_->bind_close_functor(std::bind(&TcpConnection::do_handle_close, this));
-  channel_->bind_error_functor(std::bind(&TcpConnection::do_handle_error, this));
+  channel_->bind_read_functor(
+      std::bind(&TcpConnection::do_handle_read, this, std::placeholders::_1));
+  channel_->bind_write_functor(
+      std::bind(&TcpConnection::do_handle_write, this));
+  channel_->bind_close_functor(
+      std::bind(&TcpConnection::do_handle_close, this));
+  channel_->bind_error_functor(
+      std::bind(&TcpConnection::do_handle_error, this));
 
-  CHAOSLOG_DEBUG << "TcpConnection::TcpConnection [" << name_ << "] at " << this << "sockfd=" << sockfd;
+  CHAOSLOG_DEBUG
+    << "TcpConnection::TcpConnection [" << name_ << "] at " << this
+    << "sockfd=" << sockfd;
   socket_->set_keep_alive(true);
 }
 
 TcpConnection::~TcpConnection(void) {
-  CHAOSLOG_DEBUG << "TcpConnection::~TcpConnection [" << name_ << "] at "
-    << this << " fd=" << channel_->get_fd() << " linkstate=" << linkstate_to_string();
-  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_DISCONNECTED, "link state should int disconnected");
+  CHAOSLOG_DEBUG
+    << "TcpConnection::~TcpConnection [" << name_ << "] at " << this
+    << " fd=" << channel_->get_fd() << " linkstate=" << linkstate_to_string();
+  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_DISCONNECTED,
+      "link state should int disconnected");
 }
 
 void TcpConnection::do_connect_established(void) {
-  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_CONNECTING, "link state should in connecting");
+  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_CONNECTING,
+      "link state should in connecting");
   loop_->assert_in_loopthread();
 
   set_linkstate(NetLink::NETLINK_CONNECTED);
@@ -104,7 +116,8 @@ void TcpConnection::write(const Chaos::StringPiece& message) {
       write_in_loop(message);
     }
     else {
-      void (TcpConnection::*fnp)(const Chaos::StringPiece&) = &TcpConnection::write_in_loop;
+      void (TcpConnection::*fnp)(const Chaos::StringPiece&) =
+        &TcpConnection::write_in_loop;
       loop_->run_in_loop(std::bind(fnp, this, message));
     }
   }
@@ -117,7 +130,8 @@ void TcpConnection::write(Buffer* buf) {
       buf->retrieve_all();
     }
     else {
-      void (TcpConnection::*fnp)(const Chaos::StringPiece&) = &TcpConnection::write_in_loop;
+      void (TcpConnection::*fnp)(const Chaos::StringPiece&) =
+        &TcpConnection::write_in_loop;
       loop_->run_in_loop(std::bind(fnp, this, buf->retrieve_all_to_string()));
     }
   }
@@ -139,22 +153,27 @@ void TcpConnection::shutdown(void) {
 }
 
 void TcpConnection::force_close(void) {
-  if (linkstate_ == NetLink::NETLINK_CONNECTED || linkstate_ == NetLink::NETLINK_DISCONNECTING) {
+  if (linkstate_ == NetLink::NETLINK_CONNECTED
+      || linkstate_ == NetLink::NETLINK_DISCONNECTING) {
     set_linkstate(NetLink::NETLINK_DISCONNECTING);
 
     auto self(shared_from_this());
     loop_->put_in_loop([this, self](void) {
           loop_->assert_in_loopthread();
-          if (linkstate_ == NetLink::NETLINK_CONNECTED || linkstate_ == NetLink::NETLINK_DISCONNECTED)
+          if (linkstate_ == NetLink::NETLINK_CONNECTED
+            || linkstate_ == NetLink::NETLINK_DISCONNECTED)
             do_handle_close();
         });
   }
 }
 
 void TcpConnection::force_close_with_delay(double seconds) {
-  if (linkstate_ == NetLink::NETLINK_CONNECTED || linkstate_ == NetLink::NETLINK_DISCONNECTING) {
+  if (linkstate_ == NetLink::NETLINK_CONNECTED
+      || linkstate_ == NetLink::NETLINK_DISCONNECTING) {
     set_linkstate(NetLink::NETLINK_DISCONNECTING);
-    loop_->run_after(seconds, Chaos::make_weak_callback(shared_from_this(), &TcpConnection::force_close));
+    loop_->run_after(seconds,
+        Chaos::make_weak_callback(
+          shared_from_this(), &TcpConnection::force_close));
   }
 }
 
@@ -204,18 +223,21 @@ void TcpConnection::do_handle_write(void) {
   loop_->assert_in_loopthread();
 
   if (channel_->is_writing()) {
-    ssize_t n = NetOps::socket::write(channel_->get_fd(), writbuff_.peek(), writbuff_.readable_bytes());
+    ssize_t n = NetOps::socket::write(
+        channel_->get_fd(), writbuff_.peek(), writbuff_.readable_bytes());
     if (n > 0) {
       writbuff_.retrieve(n);
       if (writbuff_.readable_bytes() == 0) {
         channel_->disabled_reading();
         if (write_complete_fn_)
           loop_->put_in_loop(std::bind(write_complete_fn_, shared_from_this()));
-        if (linkstate_ == NetLink::NETLINK_DISCONNECTING && !channel_->is_writing())
+        if (linkstate_ == NetLink::NETLINK_DISCONNECTING
+            && !channel_->is_writing())
           socket_->shutdown_write();
       }
       else {
-        CHAOSLOG_TRACE << "TcpConnection::do_handle_write - I'm going to write more data";
+        CHAOSLOG_TRACE
+          << "TcpConnection::do_handle_write - I'm going to write more data";
       }
     }
     else {
@@ -231,9 +253,11 @@ void TcpConnection::do_handle_write(void) {
 void TcpConnection::do_handle_close(void) {
   loop_->assert_in_loopthread();
 
-  CHAOSLOG_TRACE << "TcpConnection::do_handle_close - fd=" << channel_->get_fd()
+  CHAOSLOG_TRACE
+    << "TcpConnection::do_handle_close - fd=" << channel_->get_fd()
     << " linkstate=" << linkstate_to_string();
-  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_CONNECTED || linkstate_ == NetLink::NETLINK_DISCONNECTING,
+  CHAOS_CHECK(linkstate_ == NetLink::NETLINK_CONNECTED
+      || linkstate_ == NetLink::NETLINK_DISCONNECTING,
       "link state should in conncted or disconnecting");
   set_linkstate(NetLink::NETLINK_DISCONNECTED);
   channel_->disabled_all();
@@ -260,7 +284,8 @@ void TcpConnection::write_in_loop(const void* buf, std::size_t len) {
   std::size_t nremain = len;
   bool fault_error = false;
   if (linkstate_ == NetLink::NETLINK_DISCONNECTED) {
-    CHAOSLOG_WARN << "TcpConnection::write_in_loop - disconnected, give up writting";
+    CHAOSLOG_WARN
+      << "TcpConnection::write_in_loop - disconnected, give up writting";
     return;
   }
 
@@ -274,7 +299,8 @@ void TcpConnection::write_in_loop(const void* buf, std::size_t len) {
     else {
       nwrote = 0;
       if (errno != EWOULDBLOCK) {
-        CHAOSLOG_SYSERR << "TcpConnection::write_in_loop - write errno=" << errno;
+        CHAOSLOG_SYSERR
+          << "TcpConnection::write_in_loop - write errno=" << errno;
         if (errno == EPIPE || errno == ECONNRESET)
           fault_error = true;
       }
@@ -284,8 +310,10 @@ void TcpConnection::write_in_loop(const void* buf, std::size_t len) {
   CHAOS_CHECK(nremain <= len, "remain writing data should less equal to `len`");
   if (!fault_error && nremain > 0) {
     std::size_t nold = writbuff_.readable_bytes();
-    if (nold + nremain >= high_watermark_ && nold < high_watermark_ && high_watermark_fn_)
-      loop_->put_in_loop(std::bind(high_watermark_fn_, shared_from_this(), nold + nremain));
+    if (nold + nremain >= high_watermark_
+        && nold < high_watermark_ && high_watermark_fn_)
+      loop_->put_in_loop(
+          std::bind(high_watermark_fn_, shared_from_this(), nold + nremain));
     writbuff_.append(static_cast<const char*>(buf) + nwrote, nremain);
     if (!channel_->is_writing())
       channel_->enabled_writing();

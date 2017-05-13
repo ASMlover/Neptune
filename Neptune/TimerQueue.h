@@ -66,8 +66,10 @@ public:
   explicit TimerQueue(EventLoop* loop);
   ~TimerQueue(void);
 
-  TimerID add_timer(const Neptune::TimerCallback& fn, Chaos::Timestamp when, double interval);
-  TimerID add_timer(Neptune::TimerCallback&& fn, Chaos::Timestamp when, double interval);
+  TimerID add_timer(
+      const Neptune::TimerCallback& fn, Chaos::Timestamp when, double interval);
+  TimerID add_timer(
+      Neptune::TimerCallback&& fn, Chaos::Timestamp when, double interval);
   void cancel(TimerID timerid);
 
   void poll_timer(void); // Just for Windows and Darwin

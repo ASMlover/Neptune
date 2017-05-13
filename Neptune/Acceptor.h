@@ -38,7 +38,8 @@ class EventLoop;
 class InetAddress;
 
 class Acceptor : private Chaos::UnCopyable {
-  using NewConnectionFunction = std::function<void (int sockfd, const InetAddress& addr)>;
+  using NewConnectionFunction =
+    std::function<void (int sockfd, const InetAddress& addr)>;
 
   EventLoop* loop_{};
   Socket accept_socket_;

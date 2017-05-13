@@ -50,7 +50,8 @@ public:
   explicit Poller(EventLoop* loop);
   virtual ~Poller(void);
 
-  virtual Chaos::Timestamp poll(int timeout, std::vector<Channel*>& active_channels) = 0;
+  virtual Chaos::Timestamp poll(
+      int timeout, std::vector<Channel*>& active_channels) = 0;
   virtual void update_channel(Channel* channel) = 0;
   virtual void remove_channel(Channel* channel) = 0;
   virtual bool has_channel(Channel* channel) const;

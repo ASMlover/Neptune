@@ -53,14 +53,18 @@ namespace socket {
 
   int bind(int sockfd, const struct sockaddr* addr) {
     socklen_t addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in6));
-    if (::bind(sockfd, addr, addrlen) < 0)
-      CHAOSLOG_SYSFATAL << "SocketFd::bind - errno=" << socket::get_errno(sockfd);
+    if (::bind(sockfd, addr, addrlen) < 0) {
+      CHAOSLOG_SYSFATAL
+        << "SocketFd::bind - errno=" << socket::get_errno(sockfd);
+    }
     return 0;
   }
 
   int listen(int sockfd) {
-    if (::listen(sockfd, SOMAXCONN) < 0)
-      CHAOSLOG_SYSFATAL << "SocketFd::listen - errno=" << socket::get_errno(sockfd);
+    if (::listen(sockfd, SOMAXCONN) < 0) {
+      CHAOSLOG_SYSFATAL
+        << "SocketFd::listen - errno=" << socket::get_errno(sockfd);
+    }
     return 0;
   }
 
@@ -71,7 +75,8 @@ namespace socket {
 
     if (connfd < 0) {
       int saved_errno = errno;
-      CHAOSLOG_SYSERR << "SocketFd::accept - accept failed, errno=" << saved_errno;
+      CHAOSLOG_SYSERR
+        << "SocketFd::accept - accept failed, errno=" << saved_errno;
       switch (saved_errno) {
       case EAGAIN:
       case EINTR:
@@ -89,7 +94,8 @@ namespace socket {
       case ENOBUFS:
       case ENOTSOCK:
       case EOPNOTSUPP:
-        CHAOSLOG_SYSFATAL << "SocketFd::accept - unexpected errno=" << saved_errno;
+        CHAOSLOG_SYSFATAL
+          << "SocketFd::accept - unexpected errno=" << saved_errno;
         break;
       default:
         CHAOSLOG_SYSFATAL << "SocketFd::accept - unknown errno=" << saved_errno;
@@ -100,7 +106,8 @@ namespace socket {
   }
 
   int connect(int sockfd, const struct sockaddr* addr) {
-    return ::connect(sockfd, addr, static_cast<socklen_t>(sizeof(struct sockaddr_in6)));
+    return ::connect(sockfd,
+        addr, static_cast<socklen_t>(sizeof(struct sockaddr_in6)));
   }
 
   int get_errno(int sockfd) {
@@ -131,14 +138,17 @@ namespace socket {
     struct sockaddr_in6 local = socket::get_local(sockfd);
     struct sockaddr_in6 peer = socket::get_peer(sockfd);
     if (local.sin6_family == AF_INET) {
-      const struct sockaddr_in* laddr4 = reinterpret_cast<struct sockaddr_in*>(&local);
-      const struct sockaddr_in* raddr4 = reinterpret_cast<struct sockaddr_in*>(&peer);
+      const struct sockaddr_in* laddr4 =
+        reinterpret_cast<struct sockaddr_in*>(&local);
+      const struct sockaddr_in* raddr4 =
+        reinterpret_cast<struct sockaddr_in*>(&peer);
       return laddr4->sin_port == raddr4->sin_port
         && laddr4->sin_addr.s_addr == raddr4->sin_addr.s_addr;
     }
     else if (local.sin6_family == AF_INET6) {
       return local.sin6_port == peer.sin6_port
-        && std::memcmp(&local.sin6_addr, &peer.sin6_addr, sizeof(local.sin6_addr)) == 0;
+        && std::memcmp(&local.sin6_addr,
+            &peer.sin6_addr, sizeof(local.sin6_addr)) == 0;
     }
     return false;
   }
@@ -160,7 +170,8 @@ namespace addr {
   }
 
   const struct sockaddr* cast(const struct sockaddr_in* addr) {
-    return static_cast<const struct sockaddr*>(Chaos::implicit_cast<const void*>(addr));
+    return static_cast<const struct sockaddr*>(
+        Chaos::implicit_cast<const void*>(addr));
   }
 
   struct sockaddr* cast(struct sockaddr_in6* addr) {
@@ -168,15 +179,18 @@ namespace addr {
   }
 
   const struct sockaddr* cast(const struct sockaddr_in6* addr) {
-    return static_cast<const struct sockaddr*>(Chaos::implicit_cast<const void*>(addr));
+    return static_cast<const struct sockaddr*>(
+        Chaos::implicit_cast<const void*>(addr));
   }
 
   const struct sockaddr_in* to_v4(const struct sockaddr* addr) {
-    return static_cast<const struct sockaddr_in*>(Chaos::implicit_cast<const void*>(addr));
+    return static_cast<const struct sockaddr_in*>(
+        Chaos::implicit_cast<const void*>(addr));
   }
 
   const struct sockaddr_in6* to_v6(const struct sockaddr* addr) {
-    return static_cast<const struct sockaddr_in6*>(Chaos::implicit_cast<const void*>(addr));
+    return static_cast<const struct sockaddr_in6*>(
+        Chaos::implicit_cast<const void*>(addr));
   }
 }
 

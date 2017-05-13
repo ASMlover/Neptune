@@ -44,8 +44,10 @@ Channel::Channel(EventLoop* loop, int fd)
 }
 
 Channel::~Channel(void) {
-  CHAOS_CHECK(!event_handling_, "`event_handling_` should be `false` while dtor");
-  CHAOS_CHECK(!added_to_loop_, "`added_to_loop_` should be `false` while dtor");
+  CHAOS_CHECK(!event_handling_,
+      "`event_handling_` should be `false` while dtor");
+  CHAOS_CHECK(!added_to_loop_,
+      "`added_to_loop_` should be `false` while dtor");
   if (loop_->in_loopthread())
     CHAOS_CHECK(!loop_->has_channel(this), "current channel not in event loop");
 }
@@ -91,14 +93,18 @@ void Channel::handle_event_with_guard(Chaos::Timestamp recvtime) {
   CHAOSLOG_TRACE << "Channel::handle_event_with_guard - " << events_to_string();
 
   if ((revents_ & POLLHUP) && !(revents_ & POLLIN)) {
-    if (log_hup_)
-      CHAOSLOG_WARN << "Channel::handle_event_with_guard - fd=" << fd_ << " POLLHUP";
+    if (log_hup_) {
+      CHAOSLOG_WARN
+        << "Channel::handle_event_with_guard - fd=" << fd_ << " POLLHUP";
+    }
     if (close_fn_)
       close_fn_();
   }
 
-  if (revents_ & POLLNVAL)
-    CHAOSLOG_WARN << "Channel::handle_event_with_guard - fd=" << fd_ << " POLLNVAL";
+  if (revents_ & POLLNVAL) {
+    CHAOSLOG_WARN
+      << "Channel::handle_event_with_guard - fd=" << fd_ << " POLLNVAL";
+  }
 
   if (revents_ & (POLLERR | POLLNVAL)) {
     if (error_fn_)

@@ -41,7 +41,8 @@ EventPoll::EventPoll(EventLoop* loop)
 EventPoll::~EventPoll(void) {
 }
 
-Chaos::Timestamp EventPoll::poll(int timeout, std::vector<Channel*>& active_channels) {
+Chaos::Timestamp EventPoll::poll(
+    int timeout, std::vector<Channel*>& active_channels) {
   int nevents = NetOps::poll(&*pollfds_.begin(), pollfds_.size(), timeout);
   int saved_errno = errno;
 
@@ -66,7 +67,9 @@ void EventPoll::update_channel(Channel* channel) {
   assert_in_loopthread();
 
   const int fd = channel->get_fd();
-  CHAOSLOG_TRACE << "EventPoll::update_channel - fd=" << fd << ", events=" << channel->get_events();
+  CHAOSLOG_TRACE
+    << "EventPoll::update_channel - fd=" << fd
+    << ", events=" << channel->get_events();
   if (channel->get_index() < 0) {
     assert(channels_.find(fd) == channels_.end());
     NetOps::Pollfd_t pfd;
@@ -104,7 +107,8 @@ void EventPoll::remove_channel(Channel* channel) {
   assert(0 <= index && index < static_cast<int>(pollfds_.size()));
 
   const NetOps::Pollfd_t& pfd = pollfds_[index];
-  assert(pfd.fd == -fd - 1 && pfd.events == channel->get_events()); CHAOS_UNUSED(pfd);
+  assert(pfd.fd == -fd - 1 && pfd.events == channel->get_events());
+  CHAOS_UNUSED(pfd);
   std::size_t n = channels_.erase(fd);
   assert(n == 1); CHAOS_UNUSED(n);
   if (Chaos::implicit_cast<std::size_t>(index) == pollfds_.size() - 1) {
@@ -120,7 +124,8 @@ void EventPoll::remove_channel(Channel* channel) {
   }
 }
 
-void EventPoll::fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const {
+void EventPoll::fill_active_channels(
+    int nevents, std::vector<Channel*>& active_channels) const {
   for (const auto& pfd : pollfds_) {
     if (nevents <= 0)
       break;

@@ -34,20 +34,26 @@ namespace Neptune { namespace NetOps {
 
 namespace socket {
   int shutdown_read(int sockfd) {
-    if (shutdown(sockfd, SD_RECEIVE) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_read - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SD_RECEIVE) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_read - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
   int shutdown_write(int sockfd) {
-    if (shutdown(sockfd, SD_SEND) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_write - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SD_SEND) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_write - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
   int shutdown_all(int sockfd) {
-    if (shutdown(sockfd, SD_BOTH) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_all - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SD_BOTH) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_all - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
@@ -62,7 +68,8 @@ namespace socket {
   }
 
   ssize_t write(int sockfd, const void* buf, std::size_t len) {
-    return send(sockfd, static_cast<const char*>(buf), static_cast<int>(len), 0);
+    return send(sockfd,
+        static_cast<const char*>(buf), static_cast<int>(len), 0);
   }
 
   void set_iovec(Iovec_t& vec, char* buf, std::size_t len) {
@@ -85,10 +92,12 @@ namespace socket {
   }
 
   int set_option(int sockfd, int level, int optname, int optval) {
-    return setsockopt(sockfd, level, optname, (const char*)&optval, sizeof(optval));
+    return setsockopt(sockfd,
+        level, optname, (const char*)&optval, sizeof(optval));
   }
 
-  int get_option(int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
+  int get_option(
+      int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
     return getsockopt(sockfd, level, optname, (char*)optval, optlen);
   }
 }
@@ -107,14 +116,16 @@ namespace addr {
     return buf;
   }
 
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in* addr) {
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in* addr) {
     addr->sin_family = AF_INET;
     addr->sin_port = Neptune::h2n16(port);
     if (InetPton(AF_INET, ip, &addr->sin_addr) <= 0)
       CHAOSLOG_SYSERR << "NetOps::addr::get_address(ipv4) - failed";
   }
 
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in6* addr) {
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in6* addr) {
     addr->sin6_family = AF_INET6;
     addr->sin6_port = Neptune::h2n16(port);
     if (InetPton(AF_INET6, ip, &addr->sin6_addr) <= 0)

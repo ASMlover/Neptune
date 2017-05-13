@@ -45,8 +45,10 @@ class NetInitializer : private Chaos::UnCopyable {
       WSADATA wd;
       int r = WSAStartup(MAKEWORD(major, minor), &wd);
 
-      if (r != 0)
-        CHAOSLOG_SYSFATAL << "NetInitializer::startup - WinSock2 library startup failed";
+      if (r != 0) {
+        CHAOSLOG_SYSFATAL
+          << "NetInitializer::startup - WinSock2 library startup failed";
+      }
     }
   }
 

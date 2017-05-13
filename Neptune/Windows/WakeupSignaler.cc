@@ -32,8 +32,10 @@ namespace Neptune {
 
 WakeupSignaler::WakeupSignaler(void) {
   open_signaler();
-  if (!is_opened())
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  if (!is_opened()) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  }
 }
 
 WakeupSignaler::~WakeupSignaler(void) {
@@ -54,22 +56,29 @@ void WakeupSignaler::open_signaler(void) {
   addr.sin_family = AF_INET;
 
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0)
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::open_signaler - create listening sockfd failed, sockfd=" << sockfd;
+  if (sockfd < 0) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::open_signaler - create listening sockfd failed";
+  }
   int r = bind(sockfd, (const struct sockaddr*)&addr, sizeof(addr));
   if (r == 0) {
     int addrlen = sizeof(addr);
     r = getsockname(sockfd, (struct sockaddr*)&addr, &addrlen);
   }
   else {
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::open_signaler - bind sockfd failed, errno=" << WSAGetLastError();
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::open_signaler - bind sockfd failed, errno="
+      << WSAGetLastError();
   }
   if (r == 0)
     r = listen(sockfd, 1);
 
   writfd_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (writfd_ < 0)
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::open_signaler - create writer sockfd failed, writfd_=" << writfd_;
+  if (writfd_ < 0) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::open_signaler - create writer sockfd failed, writfd_="
+      << writfd_;
+  }
 
   if (r == 0)
     r = connect(writfd_, (const struct sockaddr*)&addr, sizeof(addr));

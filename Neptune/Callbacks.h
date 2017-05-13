@@ -45,7 +45,8 @@ typedef std::function<void (const TcpConnectionPtr&, std::size_t)> HighWaterMark
 typedef std::function<void (const TcpConnectionPtr&, Buffer*, Chaos::Timestamp)> MessageCallback;
 
 void on_connection_default(const TcpConnectionPtr& conn);
-void on_message_default(const TcpConnectionPtr& conn, Buffer* buff, Chaos::Timestamp recvtime);
+void on_message_default(
+    const TcpConnectionPtr& conn, Buffer* buff, Chaos::Timestamp recvtime);
 
 }
 

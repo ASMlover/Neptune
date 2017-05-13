@@ -56,7 +56,8 @@ void Socket::shutdown_write(void) {
 }
 
 void Socket::set_tcp_nodelay(bool nodelay) {
-  NetOps::socket::set_option(sockfd_, IPPROTO_TCP, TCP_NODELAY, nodelay ? 1 : 0);
+  NetOps::socket::set_option(
+      sockfd_, IPPROTO_TCP, TCP_NODELAY, nodelay ? 1 : 0);
 }
 
 void Socket::set_reuse_addr(bool reuse) {
@@ -66,14 +67,16 @@ void Socket::set_reuse_addr(bool reuse) {
 void Socket::set_reuse_port(bool reuse) {
   int r = -1;
 #if defined(SO_REUSEPORT)
-  r = NetOps::socket::set_option(sockfd_, SOL_SOCKET, SO_REUSEPORT, reuse ? 1 : 0);
+  r = NetOps::socket::set_option(
+      sockfd_, SOL_SOCKET, SO_REUSEPORT, reuse ? 1 : 0);
 #endif
   if (r < 0 && reuse)
     CHAOSLOG_SYSERR << "Socket::set_reuse_port - failed or not support";
 }
 
 void Socket::set_keep_alive(bool keep_alive) {
-  NetOps::socket::set_option(sockfd_, SOL_SOCKET, SO_KEEPALIVE, keep_alive ? 1 : 0);
+  NetOps::socket::set_option(
+      sockfd_, SOL_SOCKET, SO_KEEPALIVE, keep_alive ? 1 : 0);
 }
 
 }

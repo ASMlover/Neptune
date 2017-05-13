@@ -49,13 +49,17 @@ EventLoop::EventLoop(void)
   , timer_queue_(new TimerQueue(this))
   , wakeup_(new WakeupSignaler())
   , wakeup_channel_(new Channel(this, wakeup_->get_reader())) {
-  CHAOSLOG_DEBUG << "EventLoop::EventLoop - created " << this << " in thread " << tid_;
+  CHAOSLOG_DEBUG
+    << "EventLoop::EventLoop - created " << this << " in thread " << tid_;
   if (t_loopthread)
-    CHAOSLOG_SYSFATAL << "EventLoop::EventLoop - another EventLoop " << t_loopthread << " exists in thread " << tid_;
+    CHAOSLOG_SYSFATAL
+      << "EventLoop::EventLoop - another EventLoop " << t_loopthread
+      << " exists in thread " << tid_;
   else
     t_loopthread = this;
 
-  wakeup_channel_->bind_read_functor(std::bind(&EventLoop::do_handle_read, this));
+  wakeup_channel_->bind_read_functor(
+      std::bind(&EventLoop::do_handle_read, this));
   wakeup_channel_->enabled_reading();
 
 #if defined(CHAOS_POSIX)
@@ -64,7 +68,8 @@ EventLoop::EventLoop(void)
 }
 
 EventLoop::~EventLoop(void) {
-  CHAOSLOG_DEBUG << "EventLoop::~EventLoop - " << this << " of thread " << tid_
+  CHAOSLOG_DEBUG
+    << "EventLoop::~EventLoop - " << this << " of thread " << tid_
     << " destructs in thread " << Chaos::CurrentThread::get_tid();
 
   wakeup_channel_->disabled_all();
@@ -84,7 +89,8 @@ void EventLoop::loop(void) {
     active_channels_.clear();
     poll_return_time_ = poller_->poll(kPollMicrosecond, active_channels_);
     ++iteration_;
-    if (Chaos::Logger::get_loglevel() <= Chaos::LoggingLevel::LOGGINGLEVEL_TRACE)
+    if (Chaos::Logger::get_loglevel()
+        <= Chaos::LoggingLevel::LOGGINGLEVEL_TRACE)
       debug_active_channels();
 
     event_handling_ = true;
@@ -113,8 +119,10 @@ void EventLoop::quit(void) {
 void EventLoop::wakeup(void) {
   std::uint64_t one = 1;
   int n = wakeup_->set_signal(&one, sizeof(one));
-  if (n != sizeof(one))
-    CHAOSLOG_ERROR << "EventLoop::wakeup - writes " << n << " bytes instead of `8`";
+  if (n != sizeof(one)) {
+    CHAOSLOG_ERROR
+      << "EventLoop::wakeup - writes " << n << " bytes instead of `8`";
+  }
 }
 
 void EventLoop::cancel(Neptune::TimerID timerid) {
@@ -122,25 +130,29 @@ void EventLoop::cancel(Neptune::TimerID timerid) {
 }
 
 void EventLoop::update_channel(Channel* channel) {
-  CHAOS_CHECK(channel->get_loop() == this, "channel operations should in self thread");
+  CHAOS_CHECK(channel->get_loop() == this,
+      "channel operations should in self thread");
   assert_in_loopthread();
   poller_->update_channel(channel);
 }
 
 void EventLoop::remove_channel(Channel* channel) {
-  CHAOS_CHECK(channel->get_loop() == this, "channel operations should in self thread");
+  CHAOS_CHECK(channel->get_loop() == this,
+      "channel operations should in self thread");
   assert_in_loopthread();
 
   if (event_handling_) {
-    CHAOS_CHECK(current_active_channel_ == channel ||
-        std::find(active_channels_.begin(), active_channels_.end(), channel) == active_channels_.end(),
+    CHAOS_CHECK(current_active_channel_ == channel
+        || std::find(active_channels_.begin(),
+          active_channels_.end(), channel) == active_channels_.end(),
         "channel should be current thread or not in active channels list");
   }
   poller_->remove_channel(channel);
 }
 
 bool EventLoop::has_channel(Channel* channel) {
-  CHAOS_CHECK(channel->get_loop() == this, "channel operations should in self thread");
+  CHAOS_CHECK(channel->get_loop() == this,
+      "channel operations should in self thread");
   assert_in_loopthread();
   return poller_->has_channel(channel);
 }
@@ -150,30 +162,36 @@ std::size_t EventLoop::get_functor_count(void) const {
   return pending_functors_.size();
 }
 
-Neptune::TimerID EventLoop::run_at(Chaos::Timestamp time, const Neptune::TimerCallback& fn) {
+Neptune::TimerID EventLoop::run_at(
+    Chaos::Timestamp time, const Neptune::TimerCallback& fn) {
   return timer_queue_->add_timer(fn, time, 0.0);
 }
 
-Neptune::TimerID EventLoop::run_at(Chaos::Timestamp time, Neptune::TimerCallback&& fn) {
+Neptune::TimerID EventLoop::run_at(
+    Chaos::Timestamp time, Neptune::TimerCallback&& fn) {
   return timer_queue_->add_timer(std::move(fn), time, 0.0);
 }
 
-Neptune::TimerID EventLoop::run_after(double delay, const Neptune::TimerCallback& fn) {
+Neptune::TimerID EventLoop::run_after(
+    double delay, const Neptune::TimerCallback& fn) {
   Chaos::Timestamp time(Chaos::time_add(Chaos::Timestamp::now(), delay));
   return run_at(time, fn);
 }
 
-Neptune::TimerID EventLoop::run_after(double delay, Neptune::TimerCallback&& fn) {
+Neptune::TimerID EventLoop::run_after(
+    double delay, Neptune::TimerCallback&& fn) {
   Chaos::Timestamp time(Chaos::time_add(Chaos::Timestamp::now(), delay));
   return run_at(time, std::move(fn));
 }
 
-Neptune::TimerID EventLoop::run_every(double interval, const Neptune::TimerCallback& fn) {
+Neptune::TimerID EventLoop::run_every(
+    double interval, const Neptune::TimerCallback& fn) {
   Chaos::Timestamp time(Chaos::time_add(Chaos::Timestamp::now(), interval));
   return timer_queue_->add_timer(fn, time, interval);
 }
 
-Neptune::TimerID EventLoop::run_every(double interval, Neptune::TimerCallback&& fn) {
+Neptune::TimerID EventLoop::run_every(
+    double interval, Neptune::TimerCallback&& fn) {
   Chaos::Timestamp time(Chaos::time_add(Chaos::Timestamp::now(), interval));
   return timer_queue_->add_timer(std::move(fn), time, interval);
 }
@@ -225,8 +243,10 @@ void EventLoop::abort_not_in_loopthread(void) {
 void EventLoop::do_handle_read(void) {
   std::uint64_t one = 1;
   int n = wakeup_->get_signal(sizeof(one), &one);
-  if (n != sizeof(one))
-    CHAOSLOG_ERROR << "EventLoop::do_handle_read - reads " << n << " bytes instead of `8`";
+  if (n != sizeof(one)) {
+    CHAOSLOG_ERROR
+      << "EventLoop::do_handle_read - reads " << n << " bytes instead of `8`";
+  }
 }
 
 void EventLoop::do_pending_functors(void) {
@@ -243,8 +263,11 @@ void EventLoop::do_pending_functors(void) {
 }
 
 void EventLoop::debug_active_channels(void) const {
-  for (auto ch : active_channels_)
-    CHAOSLOG_TRACE << "EventLoop::debug_active_channels - {" << ch->revents_to_string() << "}";
+  for (auto ch : active_channels_) {
+    CHAOSLOG_TRACE
+      << "EventLoop::debug_active_channels - {"
+      << ch->revents_to_string() << "}";
+  }
 }
 
 }

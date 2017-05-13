@@ -40,20 +40,26 @@ namespace Neptune { namespace NetOps {
 
 namespace socket {
   int shutdown_read(int sockfd) {
-    if (shutdown(sockfd, SHUT_RD) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_read - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SHUT_RD) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_read - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
   int shutdown_write(int sockfd) {
-    if (shutdown(sockfd, SHUT_WR) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_write - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SHUT_WR) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_write - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
   int shutdown_all(int sockfd) {
-    if (shutdown(sockfd, SHUT_RDWR) < 0)
-      CHAOSLOG_SYSERR << "NetOps::socket::shutdown_all - errno=" << get_errno(sockfd);
+    if (shutdown(sockfd, SHUT_RDWR) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown_all - errno=" << get_errno(sockfd);
+    }
     return 0;
   }
 
@@ -93,10 +99,12 @@ namespace socket {
   }
 
   int set_option(int sockfd, int level, int optname, int optval) {
-    return setsockopt(sockfd, level, optname, (const void*)&optval, sizeof(optval));
+    return setsockopt(
+        sockfd, level, optname, (const void*)&optval, sizeof(optval));
   }
 
-  int get_option(int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
+  int get_option(
+      int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
     return getsockopt(sockfd, level, optname, optval, optlen);
   }
 }
@@ -106,23 +114,27 @@ namespace addr {
     char buf[64]{};
     if (addr->sa_family == AF_INET) {
       const struct sockaddr_in* addr4 = addr::to_v4(addr);
-      ::inet_ntop(AF_INET, &addr4->sin_addr, buf, static_cast<socklen_t>(sizeof(buf)));
+      ::inet_ntop(AF_INET,
+          &addr4->sin_addr, buf, static_cast<socklen_t>(sizeof(buf)));
     }
     else if (addr->sa_family == AF_INET6) {
       const struct sockaddr_in6* addr6 = addr::to_v6(addr);
-      ::inet_ntop(AF_INET6, &addr6->sin6_addr, buf, static_cast<socklen_t>(sizeof(buf)));
+      ::inet_ntop(AF_INET6,
+          &addr6->sin6_addr, buf, static_cast<socklen_t>(sizeof(buf)));
     }
     return buf;
   }
 
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in* addr) {
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in* addr) {
     addr->sin_family = AF_INET;
     addr->sin_port = Neptune::h2n16(port);
     if (::inet_pton(AF_INET, ip, &addr->sin_addr) <= 0)
       CHAOSLOG_SYSERR << "NetOps::addr::get_address(ipv4) - failed";
   }
 
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in6* addr) {
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in6* addr) {
     addr->sin6_family = AF_INET6;
     addr->sin6_port = Neptune::h2n16(port);
     if (::inet_pton(AF_INET6, ip, &addr->sin6_addr) <= 0)

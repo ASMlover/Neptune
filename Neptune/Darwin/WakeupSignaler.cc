@@ -34,8 +34,10 @@ namespace Neptune {
 
 WakeupSignaler::WakeupSignaler(void) {
   open_signaler();
-  if (!is_opened())
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  if (!is_opened()) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::WakeupSignaler - open signaler failed";
+  }
 }
 
 WakeupSignaler::~WakeupSignaler(void) {
@@ -51,8 +53,10 @@ int WakeupSignaler::get_signal(std::size_t len, void* buf) {
 }
 
 void WakeupSignaler::open_signaler(void) {
-  if (pipe(pipefds_) != 0)
-    CHAOSLOG_SYSFATAL << "WakeupSignaler::open_signaler - create pipe failed, errno=" << errno;
+  if (pipe(pipefds_) != 0) {
+    CHAOSLOG_SYSFATAL
+      << "WakeupSignaler::open_signaler - create pipe failed, errno=" << errno;
+  }
 
   Neptune::NetOps::socket::set_nonblock(pipefds_[0]);
   Neptune::NetOps::socket::set_nonblock(pipefds_[1]);

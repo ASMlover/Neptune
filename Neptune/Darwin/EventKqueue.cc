@@ -54,12 +54,15 @@ EventKqueue::~EventKqueue(void) {
   close(kqueuefd_);
 }
 
-Chaos::Timestamp EventKqueue::poll(int timeout, std::vector<Channel*>& active_channels) {
-  CHAOSLOG_TRACE << "EventKqueue::poll - fd total count is: " << channels_.size();
+Chaos::Timestamp EventKqueue::poll(
+    int timeout, std::vector<Channel*>& active_channels) {
+  CHAOSLOG_TRACE
+    << "EventKqueue::poll - fd total count is: " << channels_.size();
 
   struct timespec ts{timeout / 1000, timeout % 1000 * 1000000};
   int old_nevents = static_cast<int>(kqueue_events_.size());
-  int nevents = kevent(kqueuefd_, nullptr, 0, &*kqueue_events_.begin(), old_nevents, &ts);
+  int nevents = kevent(
+      kqueuefd_, nullptr, 0, &*kqueue_events_.begin(), old_nevents, &ts);
   int saved_errno = errno;
   if (nevents > 0) {
     CHAOSLOG_TRACE << "EventKqueue::poll - " << nevents << " events happened";
@@ -84,7 +87,9 @@ void EventKqueue::update_channel(Channel* channel) {
 
   const int fd = channel->get_fd();
   const int index = channel->get_index();
-  CHAOSLOG_TRACE << "EventKqueue::update_channel - fd=" << fd << " events=" << channel->get_events();
+  CHAOSLOG_TRACE
+    << "EventKqueue::update_channel - fd=" << fd
+    << " events=" << channel->get_events();
 
   if (index == Poller::EVENT_NEW || index == Poller::EVENT_DEL) {
     if (index == Poller::EVENT_NEW) {
@@ -132,7 +137,8 @@ void EventKqueue::remove_channel(Channel* channel) {
   channel->set_index(Poller::EVENT_NEW);
 }
 
-void EventKqueue::fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const {
+void EventKqueue::fill_active_channels(
+    int nevents, std::vector<Channel*>& active_channels) const {
   assert(Chaos::implicit_cast<std::size_t>(nevents) <= kqueue_events_.size());
   for (int i = 0; i < nevents; ++i) {
     Channel* channel = static_cast<Channel*>(kqueue_events_[i].udata);
@@ -157,14 +163,21 @@ void EventKqueue::fill_active_channels(int nevents, std::vector<Channel*>& activ
 
 void EventKqueue::update(int operation, Channel* channel) {
   const int fd = channel->get_fd();
-  CHAOSLOG_TRACE << "EventKqueue::update - opetation=" << operation_to_string(operation)
+  CHAOSLOG_TRACE
+    << "EventKqueue::update - opetation=" << operation_to_string(operation)
     << " fd=" << fd << " events={" << channel->get_events() << "}";
 
   if (kqueue_event_ctl(operation, fd, channel) < 0) {
-    if (operation == KQUEUEEVENT_DEL)
-      CHAOSLOG_SYSERR << "EventKqueue::update - operation=" << operation_to_string(operation) << " fd=" << fd;
-    else
-      CHAOSLOG_SYSFATAL << "EventKqueue::update - operation=" << operation_to_string(operation) << " fd=" << fd;
+    if (operation == KQUEUEEVENT_DEL) {
+      CHAOSLOG_SYSERR
+        << "EventKqueue::update - operation=" << operation_to_string(operation)
+        << " fd=" << fd;
+    }
+    else {
+      CHAOSLOG_SYSFATAL
+        << "EventKqueue::update - operation=" << operation_to_string(operation)
+        << " fd=" << fd;
+    }
   }
 }
 
@@ -172,10 +185,14 @@ int EventKqueue::kqueue_event_add(int fd, Channel* channel) {
   struct kevent kev[2];
   int nchanges = 0;
 
-  if (channel->is_reading())
-    EV_SET(kev + nchanges++, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
-  if (channel->is_writing())
-    EV_SET(kev + nchanges++, fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
+  if (channel->is_reading()) {
+    EV_SET(kev + nchanges++,
+        fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
+  }
+  if (channel->is_writing()) {
+    EV_SET(kev + nchanges++,
+        fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
+  }
   return kevent(kqueuefd_, kev, nchanges, nullptr, 0, nullptr);
 }
 
@@ -191,14 +208,20 @@ int EventKqueue::kqueue_event_mod(int fd, Channel* channel) {
   struct kevent kev[2];
   int nchanges = 0;
 
-  if (channel->is_reading())
-    EV_SET(kev + nchanges++, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
-  else
+  if (channel->is_reading()) {
+    EV_SET(kev + nchanges++,
+        fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
+  }
+  else {
     EV_SET(kev + nchanges++, fd, EVFILT_READ, EV_DELETE, 0, 0, nullptr);
-  if (channel->is_writing())
-    EV_SET(kev + nchanges++, fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
-  else
+  }
+  if (channel->is_writing()) {
+    EV_SET(kev + nchanges++,
+        fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, (void*)channel);
+  }
+  else {
     EV_SET(kev + nchanges++, fd, EVFILT_WRITE, EV_DELETE, 0, 0, nullptr);
+  }
   return kevent(kqueuefd_, kev, nchanges, nullptr, 0, nullptr);
 }
 

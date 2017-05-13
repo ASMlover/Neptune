@@ -84,7 +84,8 @@ public:
   bool has_channel(Channel* channel);
   std::size_t get_functor_count(void) const;
 
-  Neptune::TimerID run_at(Chaos::Timestamp time, const Neptune::TimerCallback& fn);
+  Neptune::TimerID run_at(
+      Chaos::Timestamp time, const Neptune::TimerCallback& fn);
   Neptune::TimerID run_at(Chaos::Timestamp time, Neptune::TimerCallback&& fn);
   Neptune::TimerID run_after(double delay, const Neptune::TimerCallback& fn);
   Neptune::TimerID run_after(double delay, Neptune::TimerCallback&& fn);

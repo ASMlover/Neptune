@@ -72,7 +72,8 @@ namespace socket {
   ssize_t readv(int sockfd, int niov, Iovec_t* iov);
   void set_nonblock(int sockfd);
   int set_option(int sockfd, int level, int optname, int optval);
-  int get_option(int sockfd, int level, int optname, int* optval, socklen_t* optlen);
+  int get_option(
+      int sockfd, int level, int optname, int* optval, socklen_t* optlen);
   int get_errno(int sockfd);
   struct sockaddr_in6 get_local(int sockfd);
   struct sockaddr_in6 get_peer(int sockfd);
@@ -82,8 +83,10 @@ namespace socket {
 namespace addr {
   std::string to_string(const struct sockaddr* addr, bool is_only);
   std::string to_string(const struct sockaddr* addr);
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in* addr);
-  void get_address(const char* ip, std::uint16_t port, struct sockaddr_in6* addr);
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in* addr);
+  void get_address(
+      const char* ip, std::uint16_t port, struct sockaddr_in6* addr);
   struct sockaddr* cast(struct sockaddr_in* addr);
   const struct sockaddr* cast(const struct sockaddr_in* addr);
   struct sockaddr* cast(struct sockaddr_in6* addr);

@@ -38,7 +38,8 @@ namespace Neptune {
 class Channel;
 class EventLoop;
 
-class Connector : private Chaos::UnCopyable, public std::enable_shared_from_this<Connector> {
+class Connector
+  : private Chaos::UnCopyable, public std::enable_shared_from_this<Connector> {
   using NewConnectionFunction = std::function<void (int sockfd)>;
 
   enum class NetLink {

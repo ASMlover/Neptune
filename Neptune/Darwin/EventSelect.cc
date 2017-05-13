@@ -101,11 +101,13 @@ EventSelect::EventSelect(EventLoop* loop)
 EventSelect::~EventSelect(void) {
 }
 
-Chaos::Timestamp EventSelect::poll(int timeout, std::vector<Channel*>& active_channels) {
+Chaos::Timestamp EventSelect::poll(
+    int timeout, std::vector<Channel*>& active_channels) {
   struct timeval tv{timeout / 1000, timeout % 1000 * 1000};
 
   fds_out_.copy(fds_in_);
-  int nevents = select(max_fd_ + 1, fds_out_.read_fds, fds_out_.write_fds, fds_out_.error_fds, &tv);
+  int nevents = select(max_fd_ + 1,
+      fds_out_.read_fds, fds_out_.write_fds, fds_out_.error_fds, &tv);
   int saved_errno = errno;
   if (nevents > 0) {
     CHAOSLOG_TRACE << "EventSelect::poll - " << nevents << " events happened";
@@ -128,13 +130,16 @@ void EventSelect::update_channel(Channel* channel) {
 
   const int fd = channel->get_fd();
   const int index = channel->get_index();
-  CHAOSLOG_TRACE << "EventSelect::update_channel - fd=" << fd << ", events=" << channel->get_events();
+  CHAOSLOG_TRACE
+    << "EventSelect::update_channel - fd=" << fd
+    << ", events=" << channel->get_events();
 
   if (index == Poller::EVENT_NEW || index == Poller::EVENT_DEL) {
     if (index == Poller::EVENT_NEW) {
       assert(channels_.find(fd) == channels_.end());
       if (channels_.size() >= static_cast<std::size_t>(fd_storage_)) {
-        int new_fdcount = (fd_storage_ != 0 ? static_cast<int>(1.5 * fd_storage_) : FD_SETSIZE);
+        int new_fdcount =
+          (fd_storage_ != 0 ? static_cast<int>(1.5 * fd_storage_) : FD_SETSIZE);
         fds_in_.resize(new_fdcount);
         fds_out_.resize(new_fdcount);
         fd_storage_ = new_fdcount;
@@ -212,7 +217,8 @@ void EventSelect::remove_channel(Channel* channel) {
   }
 }
 
-void EventSelect::fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const {
+void EventSelect::fill_active_channels(
+    int nevents, std::vector<Channel*>& active_channels) const {
   for (auto& channel_pair : channels_) {
     if (nevents <= 0)
       break;

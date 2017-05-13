@@ -30,7 +30,8 @@
 
 namespace Neptune {
 
-EventLoopThread::EventLoopThread(const InitiateFunction& fn, const std::string& name)
+EventLoopThread::EventLoopThread(
+    const InitiateFunction& fn, const std::string& name)
   : mutex_()
   , cond_(mutex_)
   , initiate_fn_(fn)

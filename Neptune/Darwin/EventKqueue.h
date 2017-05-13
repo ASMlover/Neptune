@@ -42,7 +42,8 @@ class EventKqueue : public Poller {
   int kqueuefd_{};
   std::vector<struct kevent> kqueue_events_;
 
-  void fill_active_channels(int nevents, std::vector<Channel*>& active_channels) const;
+  void fill_active_channels(
+      int nevents, std::vector<Channel*>& active_channels) const;
   void update(int operation, Channel* channel);
   int kqueue_event_add(int fd, Channel* channel);
   int kqueue_event_del(int fd);
@@ -53,7 +54,8 @@ public:
   explicit EventKqueue(EventLoop* loop);
   virtual ~EventKqueue(void) override;
 
-  virtual Chaos::Timestamp poll(int timeout, std::vector<Channel*>& active_channels) override;
+  virtual Chaos::Timestamp poll(
+      int timeout, std::vector<Channel*>& active_channels) override;
   virtual void update_channel(Channel* channel) override;
   virtual void remove_channel(Channel* channel) override;
 };
