@@ -26,53 +26,23 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 set(NEPTUNELIB_NAME "neptune")
-set(NEPTUNE_SOURCES
 
-  Kern/NetOps.cc
-  Acceptor.cc
-  Buffer.cc
-  Channel.cc
-  Connector.cc
-  EventLoop.cc
-  EventLoopThread.cc
-  EventLoopThreadPool.cc
-  EventPoll.cc
-  InetAddress.cc
-  Poller.cc
-  Socket.cc
-  TcpClient.cc
-  TcpConnection.cc
-  TcpServer.cc
-  Timer.cc
-  TimerQueue.cc
-  )
-
+file(GLOB NEPTUNE_SOURCES *.cc Kern/*.cc)
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
-  set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES}
-
-    Kern/Windows/NetOps.cc
-    Windows/EventSelect.cc
-    Windows/WakeupSignaler.cc
+  file(GLOB_RECURSE NEPTUNE_WINDOWS_SOURCES
+    Kern/Windows/*.cc
+    Windows/*.cc
     )
+  set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES} ${NEPTUNE_WINDOWS_SOURCES})
 else()
-  set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES}
-
-    Kern/Posix/NetOps.cc
-    )
+  file(GLOB_RECURSE NEPTUNE_POSIX_SOURCES Kern/Posix/*.cc)
+  set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES} ${NEPTUNE_POSIX_SOURCES})
   if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES}
-
-      Linux/EventEpoll.cc
-      Linux/EventSelect.cc
-      Linux/WakeupSignaler.cc
-      )
+    file(GLOB_RECURSE NEPTUNE_LINUX_SOURCES Linux/*.cc)
+    set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES} ${NEPTUNE_LINUX_SOURCES})
   elseif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES}
-
-      Darwin/EventKqueue.cc
-      Darwin/EventSelect.cc
-      Darwin/WakeupSignaler.cc
-      )
+    file(GLOB_RECURSE NEPTUNE_DARWIN_SOURCES Darwin/*.cc)
+    set(NEPTUNE_SOURCES ${NEPTUNE_SOURCES} ${NEPTUNE_DARWIN_SOURCES})
   endif()
 endif()
 message(STATUS "`NeptunePROJ` NEPTUNE_SOURCES: ${NEPTUNE_SOURCES}")
