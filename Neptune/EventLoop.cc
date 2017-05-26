@@ -39,7 +39,7 @@
 namespace Neptune {
 
 __chaos_tl EventLoop* t_loopthread = nullptr;
-const int kPollMicrosecond = 10000;
+static constexpr int kPollMicrosecond = 10000;
 
 Neptune::IgnoreSigPipe g_ignore_sigpipe;
 
@@ -51,12 +51,14 @@ EventLoop::EventLoop(void)
   , wakeup_channel_(new Channel(this, wakeup_->get_reader())) {
   CHAOSLOG_DEBUG
     << "EventLoop::EventLoop - created " << this << " in thread " << tid_;
-  if (t_loopthread)
+  if (t_loopthread) {
     CHAOSLOG_SYSFATAL
       << "EventLoop::EventLoop - another EventLoop " << t_loopthread
       << " exists in thread " << tid_;
-  else
+  }
+  else {
     t_loopthread = this;
+  }
 
   wakeup_channel_->bind_read_functor(
       std::bind(&EventLoop::do_handle_read, this));

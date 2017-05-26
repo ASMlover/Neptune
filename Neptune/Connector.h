@@ -47,8 +47,8 @@ class Connector
     NETLINK_CONNECTING,
     NETLINK_CONNECTED,
   };
-  static const int kMaxRetryDelayMillisecond = 30 * 1000;
-  static const int kInitRetryDelayMillisecond = 500;
+  static constexpr int kMaxRetryDelayMillisecond = 30 * 1000;
+  static constexpr int kInitRetryDelayMillisecond = 500;
 
   EventLoop* loop_{};
   bool need_connect_{};

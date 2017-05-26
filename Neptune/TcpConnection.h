@@ -192,8 +192,6 @@ public:
   }
 };
 
-typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
-
 }
 
 #endif // NEPTUNE_TCPCONNECTION_H

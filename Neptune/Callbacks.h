@@ -36,13 +36,15 @@ namespace Neptune {
 class Buffer;
 class TcpConnection;
 
-typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
-typedef std::function<void (void)> TimerCallback;
-typedef std::function<void (const TcpConnectionPtr&)> ConnectionCallback;
-typedef std::function<void (const TcpConnectionPtr&)> CloseCallback;
-typedef std::function<void (const TcpConnectionPtr&)> WriteCompleteCallback;
-typedef std::function<void (const TcpConnectionPtr&, std::size_t)> HighWaterMarkCallback;
-typedef std::function<void (const TcpConnectionPtr&, Buffer*, Chaos::Timestamp)> MessageCallback;
+using TcpConnectionPtr      = std::shared_ptr<TcpConnection>;
+using TimerCallback         = std::function<void (void)>;
+using ConnectionCallback    = std::function<void (const TcpConnectionPtr&)>;
+using CloseCallback         = std::function<void (const TcpConnectionPtr&)>;
+using WriteCompleteCallback = std::function<void (const TcpConnectionPtr&)>;
+using HighWaterMarkCallback =
+  std::function<void (const TcpConnectionPtr&, std::size_t)>;
+using MessageCallback       =
+  std::function<void (const TcpConnectionPtr&, Buffer*, Chaos::Timestamp)>;
 
 void on_connection_default(const TcpConnectionPtr& conn);
 void on_message_default(

@@ -35,9 +35,6 @@
 
 namespace Neptune {
 
-const int Connector::kMaxRetryDelayMillisecond;
-const int Connector::kInitRetryDelayMillisecond;
-
 Connector::Connector(EventLoop* loop, const InetAddress& server_addr)
   : loop_(loop)
   , retry_delay_millisecond_(kInitRetryDelayMillisecond)

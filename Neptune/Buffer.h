@@ -43,8 +43,8 @@ class Buffer : public Chaos::Copyable {
 
   static const char* kCRLF;
 public:
-  static const std::size_t kCheapPrepend = 8;
-  static const std::size_t kInitialBytes = 1024;
+  static constexpr std::size_t kCheapPrepend = 8;
+  static constexpr std::size_t kInitialBytes = 1024;
 
   explicit Buffer(std::size_t init_bytes = kInitialBytes)
     : buff_(kCheapPrepend + init_bytes)

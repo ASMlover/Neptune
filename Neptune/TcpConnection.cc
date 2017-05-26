@@ -37,7 +37,7 @@
 
 namespace Neptune {
 
-static const std::size_t kHighWatermark = 64 * 1024 * 1024;
+static constexpr std::size_t kHighWatermark = 64 * 1024 * 1024;
 
 void on_connection_default(const TcpConnectionPtr& conn) {
   CHAOSLOG_TRACE << "on_connection_default - "
