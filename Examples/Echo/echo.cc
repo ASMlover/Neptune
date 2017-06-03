@@ -24,40 +24,38 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-#include <cstring>
-#include <iostream>
-#include <Chaos/Types.h>
-#include <Neptune/InetAddress.h>
-#include <Neptune/EventLoop.h>
+#include <functional>
+#include <string>
+#include <Chaos/Logging/Logging.h>
+#include <Neptune/Buffer.h>
+#include <Neptune/TcpConnection.h>
 #include "echo.h"
 
-int main(int argc, char* argv[]) {
-  CHAOS_UNUSED(argc), CHAOS_UNUSED(argv);
+EchoServer::EchoServer(
+    Neptune::EventLoop* loop, const Neptune::InetAddress& listen_addr)
+  : server_(loop, listen_addr, "EchoServer") {
+  server_.bind_connection_functor(
+      std::bind(&EchoServer::on_connection, this, std::placeholders::_1));
+  server_.bind_message_functor(std::bind(&EchoServer::on_message, this,
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+}
 
-  auto help_fn = [](void) {
-    std::cout
-      << "USAGE: echo [option]\n\n"
-      << "\ts - start echo server\n"
-      << "\tc - start echo client" << std::endl;
-  };
+void EchoServer::start(void) {
+  server_.start();
+}
 
-  if (argc < 2) {
-    help_fn();
-    return 0;
-  }
+void EchoServer::on_connection(const Neptune::TcpConnectionPtr& conn) {
+  CHAOSLOG_INFO
+    << "EchoServer - " << conn->get_peer_address().get_host_port()
+    << " -> " << conn->get_local_address().get_host_port()
+    << " is " << (conn->is_connected() ? "UP" : "DOWN");
+}
 
-  if (std::strcmp(argv[1], "s") == 0) {
-    Neptune::EventLoop loop;
-    Neptune::InetAddress listen_addr(5555);
-    EchoServer server(&loop, listen_addr);
-    server.start();
-    loop.loop();
-  }
-  else if (std::strcmp(argv[1], "c") == 0) {
-  }
-  else {
-    help_fn();
-  }
-
-  return 0;
+void EchoServer::on_message(
+    const Neptune::TcpConnectionPtr& conn,
+    Neptune::Buffer* buf, Chaos::Timestamp time) {
+  std::string msg(buf->retrieve_all_to_string());
+  CHAOSLOG_INFO << conn->get_name() << " echo " << msg.size() << " bytes, "
+    << "data received at " << time.to_string();
+  conn->write(msg);
 }

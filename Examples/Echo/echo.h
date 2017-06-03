@@ -24,40 +24,18 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-#include <cstring>
-#include <iostream>
-#include <Chaos/Types.h>
-#include <Neptune/InetAddress.h>
-#include <Neptune/EventLoop.h>
-#include "echo.h"
+#pragma once
 
-int main(int argc, char* argv[]) {
-  CHAOS_UNUSED(argc), CHAOS_UNUSED(argv);
+#include <Chaos/UnCopyable.h>
+#include <Neptune/TcpServer.h>
 
-  auto help_fn = [](void) {
-    std::cout
-      << "USAGE: echo [option]\n\n"
-      << "\ts - start echo server\n"
-      << "\tc - start echo client" << std::endl;
-  };
+class EchoServer : private Chaos::UnCopyable {
+  Neptune::TcpServer server_;
 
-  if (argc < 2) {
-    help_fn();
-    return 0;
-  }
-
-  if (std::strcmp(argv[1], "s") == 0) {
-    Neptune::EventLoop loop;
-    Neptune::InetAddress listen_addr(5555);
-    EchoServer server(&loop, listen_addr);
-    server.start();
-    loop.loop();
-  }
-  else if (std::strcmp(argv[1], "c") == 0) {
-  }
-  else {
-    help_fn();
-  }
-
-  return 0;
-}
+  void on_connection(const Neptune::TcpConnectionPtr& conn);
+  void on_message(const Neptune::TcpConnectionPtr& conn,
+      Neptune::Buffer* buf, Chaos::Timestamp time);
+public:
+  EchoServer(Neptune::EventLoop* loop, const Neptune::InetAddress& listen_addr);
+  void start(void);
+};
