@@ -27,7 +27,19 @@
 #pragma once
 
 #include <Chaos/UnCopyable.h>
+#include <Neptune/TcpClient.h>
 #include <Neptune/TcpServer.h>
+
+class EchoClient : private Chaos::UnCopyable {
+  Neptune::TcpClient client_;
+
+  void on_connection(const Neptune::TcpConnectionPtr& conn);
+  void on_message(const Neptune::TcpConnectionPtr& conn,
+      Neptune::Buffer* buf, Chaos::Timestamp time);
+public:
+  EchoClient(Neptune::EventLoop* loop, const Neptune::InetAddress& server_addr);
+  void connect(void);
+};
 
 class EchoServer : private Chaos::UnCopyable {
   Neptune::TcpServer server_;

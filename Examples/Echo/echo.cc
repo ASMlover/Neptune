@@ -31,6 +31,37 @@
 #include <Neptune/TcpConnection.h>
 #include "echo.h"
 
+EchoClient::EchoClient(
+    Neptune::EventLoop* loop, const Neptune::InetAddress& server_addr)
+  : client_(loop, server_addr, "EchoClient") {
+  client_.bind_connection_functor(
+      std::bind(&EchoClient::on_connection, this, std::placeholders::_1));
+  client_.bind_message_functor(std::bind(&EchoClient::on_message, this,
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+}
+
+void EchoClient::connect(void) {
+  client_.connect();
+}
+
+void EchoClient::on_connection(const Neptune::TcpConnectionPtr& conn) {
+  CHAOSLOG_INFO
+    << "EchoClient(" << conn->get_local_address().get_host_port()
+    << ") connect to server(" << conn->get_peer_address().get_host_port()
+    << ") -> " << (conn->is_connected() ? "CONNECTED" : "DISCONNECTED");
+
+  std::string msg("This is EchoClient");
+  conn->write(msg);
+}
+
+void EchoClient::on_message(
+    const Neptune::TcpConnectionPtr& conn,
+    Neptune::Buffer* buf, Chaos::Timestamp time) {
+  CHAOSLOG_INFO
+    << conn->get_name() << " received [" << buf->retrieve_all_to_string()
+    << "] at (" << time.to_string() << ")";
+}
+
 EchoServer::EchoServer(
     Neptune::EventLoop* loop, const Neptune::InetAddress& listen_addr)
   : server_(loop, listen_addr, "EchoServer") {
@@ -46,16 +77,16 @@ void EchoServer::start(void) {
 
 void EchoServer::on_connection(const Neptune::TcpConnectionPtr& conn) {
   CHAOSLOG_INFO
-    << "EchoServer - " << conn->get_peer_address().get_host_port()
-    << " -> " << conn->get_local_address().get_host_port()
-    << " is " << (conn->is_connected() ? "UP" : "DOWN");
+    << "EchoServer(" << conn->get_local_address().get_host_port()
+    << ") accept connection(" << conn->get_peer_address().get_host_port()
+    << ") -> " << (conn->is_connected() ? "CONNECTED" : "DISCONNECTED");
 }
 
 void EchoServer::on_message(
     const Neptune::TcpConnectionPtr& conn,
     Neptune::Buffer* buf, Chaos::Timestamp time) {
   std::string msg(buf->retrieve_all_to_string());
-  CHAOSLOG_INFO << conn->get_name() << " echo " << msg.size() << " bytes, "
-    << "data received at " << time.to_string();
+  CHAOSLOG_INFO << conn->get_name() << " echo(" << msg.size() << ")bytes "
+    << "data received at(" << time.to_string() << ")";
   conn->write(msg);
 }

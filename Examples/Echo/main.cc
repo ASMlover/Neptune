@@ -54,6 +54,11 @@ int main(int argc, char* argv[]) {
     loop.loop();
   }
   else if (std::strcmp(argv[1], "c") == 0) {
+    Neptune::EventLoop loop;
+    Neptune::InetAddress server_addr("127.0.0.1", 5555);
+    EchoClient client(&loop, server_addr);
+    client.connect();
+    loop.loop();
   }
   else {
     help_fn();
