@@ -47,12 +47,9 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "`NeptunePROJ` CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
-# build all binaries in a separate directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 # set building options
-option(NEPTUNE_BUILD_TEST "build Neptune examples and unittests" OFF)
 option(NEPTUNE_LINK_CHAOS "build Neptune need link `Chaos`" ON)
+option(NEPTUNE_BUILD_EXAMPLES "build Neptune examples and unittests" ON)
 
 # set building CMAKE_CXX_FLAGS
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -93,6 +90,6 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/External/Chaos)
 add_subdirectory(External/Chaos/Chaos)
 add_subdirectory(Neptune)
-if (NEPTUNE_BUILD_TEST)
-  # add_subdirectory(Tests)
+if (NEPTUNE_BUILD_EXAMPLES)
+  add_subdirectory(Examples)
 endif()
