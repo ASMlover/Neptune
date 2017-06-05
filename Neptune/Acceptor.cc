@@ -60,7 +60,7 @@ void Acceptor::do_handle_read(void) {
 
   InetAddress peer_addr;
   int connfd = accept_socket_.accept(peer_addr);
-  if (connfd >= 0){
+  if (connfd >= 0) {
     if (new_connection_fn_)
       new_connection_fn_(connfd, peer_addr);
     else
