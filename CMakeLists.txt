@@ -49,7 +49,8 @@ message(STATUS "`NeptunePROJ` CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 # set building options
 option(NEPTUNE_LINK_CHAOS "build Neptune need link `Chaos`" ON)
-option(NEPTUNE_BUILD_EXAMPLES "build Neptune examples and unittests" ON)
+option(NEPTUNE_BUILD_TESTS "build Neptune unittests" ON)
+option(NEPTUNE_BUILD_EXAMPLES "build Neptune examples" ON)
 
 # set building CMAKE_CXX_FLAGS
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -90,6 +91,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/External/Chaos)
 add_subdirectory(External/Chaos/Chaos)
 add_subdirectory(Neptune)
+if (NEPTUNE_BUILD_TESTS)
+  add_subdirectory(Tests)
+endif()
 if (NEPTUNE_BUILD_EXAMPLES)
   add_subdirectory(Examples)
 endif()
