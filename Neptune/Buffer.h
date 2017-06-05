@@ -70,7 +70,7 @@ public:
   }
 
   std::size_t writable_bytes(void) const {
-    return buff_.size() - rindex_;
+    return buff_.size() - windex_;
   }
 
   const char* peek(void) const {
