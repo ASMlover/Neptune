@@ -28,7 +28,7 @@
 set(EXAMPLE_ECHO "echo")
 
 file(GLOB_RECURSE EXAMPLE_ECHO_SOURCES *.cc)
-message(STATUS "[EXAMPLE.Echo] EXAMPLE_ECHO_SOURCES: ${EXAMPLE_ECHO_SOURCES}")
+message(STATUS "[NeptunePROJ.Examples.Echo] EXAMPLE_ECHO_SOURCES: ${EXAMPLE_ECHO_SOURCES}")
 
 add_executable(${EXAMPLE_ECHO} ${EXAMPLE_ECHO_SOURCES})
 target_link_libraries(${EXAMPLE_ECHO} neptune)
