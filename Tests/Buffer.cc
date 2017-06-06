@@ -27,10 +27,10 @@
 #include <Chaos/Unittest/TestHarness.h>
 #include <Neptune/Buffer.h>
 
-CHAOS_TEST(BufferAppendRetrieve, Chaos::FakeTester) {
-  namespace nep = ::Neptune;
-  nep::Buffer buf;
+namespace nep = ::Neptune;
 
+CHAOS_TEST(BufferAppendRetrieve, Chaos::FakeTester) {
+  nep::Buffer buf;
   CHAOS_CHECK_EQ(buf.readable_bytes(), 0);
   CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes);
   CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend);
@@ -65,8 +65,6 @@ CHAOS_TEST(BufferAppendRetrieve, Chaos::FakeTester) {
 }
 
 CHAOS_TEST(BufferGrow, Chaos::FakeTester) {
-  namespace nep = ::Neptune;
-
   nep::Buffer buf;
   buf.append(std::string(400, 'y'));
   CHAOS_CHECK_EQ(buf.readable_bytes(), 400);
@@ -89,8 +87,6 @@ CHAOS_TEST(BufferGrow, Chaos::FakeTester) {
 }
 
 CHAOS_TEST(BufferInsideGrow, Chaos::FakeTester) {
-  namespace nep = ::Neptune;
-
   nep::Buffer buf;
   buf.append(std::string(800, 'x'));
   CHAOS_CHECK_EQ(buf.readable_bytes(), 800);
@@ -105,4 +101,83 @@ CHAOS_TEST(BufferInsideGrow, Chaos::FakeTester) {
   CHAOS_CHECK_EQ(buf.readable_bytes(), 600);
   CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes - 600);
   CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend);
+}
+
+CHAOS_TEST(BufferShrink, Chaos::FakeTester) {
+  nep::Buffer buf;
+  buf.append(std::string(2000, 'x'));
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 2000);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), 0);
+  CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend);
+
+  buf.retrieve(1500);
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 500);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), 0);
+  CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend + 1500);
+
+  buf.shrink(0);
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 500);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes - 500);
+  CHAOS_CHECK_EQ(buf.retrieve_all_to_string(), std::string(500, 'x'));
+  CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend);
+}
+
+CHAOS_TEST(BufferPrepend, Chaos::FakeTester) {
+  nep::Buffer buf;
+  buf.append(std::string(200, 'x'));
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 200);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes - 200);
+  CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend);
+
+  int x{1024};
+  buf.prepend(&x, sizeof(x));
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 204);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes - 200);
+  CHAOS_CHECK_EQ(buf.prependable_bytes(), nep::Buffer::kCheapPrepend - 4);
+}
+
+CHAOS_TEST(BufferReadInt, Chaos::FakeTester) {
+  nep::Buffer buf;
+  buf.append("NEPTUNE");
+
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 7);
+  CHAOS_CHECK_EQ(buf.peek_int8(), 'N');
+  std::int16_t i16 = buf.peek_int16();
+  CHAOS_CHECK_EQ(i16, 'N' * 256 + 'E');
+  CHAOS_CHECK_EQ(buf.peek_int32(), i16 * 65536 + 'P' * 256 + 'T');
+
+  CHAOS_CHECK_EQ(buf.read_int8(), 'N');
+  CHAOS_CHECK_EQ(buf.read_int16(), 'E' * 256 + 'P');
+  CHAOS_CHECK_EQ(buf.read_int8(), 'T');
+  CHAOS_CHECK_EQ(buf.read_int8(), 'U');
+  CHAOS_CHECK_EQ(buf.read_int16(), 'N' * 256 + 'E');
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 0);
+  CHAOS_CHECK_EQ(buf.writable_bytes(), nep::Buffer::kInitialBytes);
+
+  buf.append_int8(-1);
+  buf.append_int16(-2);
+  buf.append_int32(-3);
+  CHAOS_CHECK_EQ(buf.readable_bytes(), 7);
+  CHAOS_CHECK_EQ(buf.read_int8(), -1);
+  CHAOS_CHECK_EQ(buf.read_int16(), -2);
+  CHAOS_CHECK_EQ(buf.read_int32(), -3);
+}
+
+CHAOS_TEST(BufferEOL, Chaos::FakeTester) {
+  nep::Buffer buf;
+  buf.append(std::string(4096, 'x'));
+  const char* null{};
+  CHAOS_CHECK_EQ(buf.find_eol(), null);
+  CHAOS_CHECK_EQ(buf.find_eol(buf.peek() + 4000), null);
+}
+
+#include <iostream>
+
+CHAOS_TEST(BufferMove, Chaos::FakeTester) {
+  nep::Buffer buf;
+  buf.append("NEPTUNE", 7);
+  const char* inner = buf.peek();
+  [](const nep::Buffer& b, const void* inner) {
+    CHAOS_CHECK_EQ(inner, static_cast<const void*>(b.peek()));
+  }(buf, inner);
 }
