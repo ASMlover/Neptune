@@ -171,8 +171,6 @@ CHAOS_TEST(BufferEOL, Chaos::FakeTester) {
   CHAOS_CHECK_EQ(buf.find_eol(buf.peek() + 4000), null);
 }
 
-#include <iostream>
-
 CHAOS_TEST(BufferMove, Chaos::FakeTester) {
   nep::Buffer buf;
   buf.append("NEPTUNE", 7);
