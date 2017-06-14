@@ -43,11 +43,11 @@ WakeupSignaler::~WakeupSignaler(void) {
 }
 
 int WakeupSignaler::set_signal(const void* buf, std::size_t len) {
-  return send(writfd_, (const char*)buf, len, 0);
+  return send(writfd_, (const char*)buf, static_cast<int>(len), 0);
 }
 
 int WakeupSignaler::get_signal(std::size_t len, void* buf) {
-  return recv(readfd_, (char*)buf, len, 0);
+  return recv(readfd_, (char*)buf, static_cast<int>(len), 0);
 }
 
 void WakeupSignaler::open_signaler(void) {

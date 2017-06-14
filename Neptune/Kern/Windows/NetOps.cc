@@ -74,7 +74,7 @@ namespace socket {
 
   void set_iovec(Iovec_t& vec, char* buf, std::size_t len) {
     vec.buf = buf;
-    vec.len = len;
+    vec.len = static_cast<ULONG>(len);
   }
 
   ssize_t readv(int sockfd, int niov, Iovec_t* iov) {

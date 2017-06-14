@@ -43,7 +43,8 @@ EventPoll::~EventPoll(void) {
 
 Chaos::Timestamp EventPoll::poll(
     int timeout, std::vector<Channel*>& active_channels) {
-  int nevents = NetOps::poll(&*pollfds_.begin(), pollfds_.size(), timeout);
+  int nevents = NetOps::poll(&*pollfds_.begin(),
+      static_cast<std::uint32_t>(pollfds_.size()), timeout);
   int saved_errno = errno;
 
   if (nevents > 0) {
