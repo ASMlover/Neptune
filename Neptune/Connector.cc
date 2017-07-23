@@ -184,8 +184,14 @@ void Connector::retry(int sockfd) {
     loop_->run_after(
         retry_delay_millisecond_ / 1000.0,
         std::bind(&Connector::start_in_loop, shared_from_this()));
+#if defined(CHAOS_DARWIN)
+    retry_delay_millisecond_ =
+      kMaxRetryDelayMillisecond < retry_delay_millisecond_ * 2 ?
+      kMaxRetryDelayMillisecond : retry_delay_millisecond_ * 2;
+#else
     retry_delay_millisecond_ =
       Chaos::chaos_min(retry_delay_millisecond_ * 2, kMaxRetryDelayMillisecond);
+#endif
   }
   else {
     CHAOSLOG_DEBUG << "Connector::retry - do not connect";

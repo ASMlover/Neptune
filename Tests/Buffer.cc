@@ -24,8 +24,16 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+#include <Chaos/Platform.h>
 #include <Chaos/Unittest/TestHarness.h>
 #include <Neptune/Buffer.h>
+
+#if defined(CHAOS_DARWIN)
+namespace Neptune {
+  constexpr std::size_t Buffer::kCheapPrepend;
+  constexpr std::size_t Buffer::kInitialBytes;
+}
+#endif
 
 namespace nep = ::Neptune;
 
