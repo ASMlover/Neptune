@@ -1,7 +1,7 @@
 # **Neptune: Morden C++ Network Library**
 ***
 
-  * :rotating_light: **Not yet completed**
+:rotating_light: **NOT YET COMPLETED**
 
 ## **What is `Neptune`?**
   **Neptune is a morden C++ network programming libraries.**
