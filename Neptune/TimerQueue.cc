@@ -58,12 +58,12 @@ namespace Unexposed {
   }
 
   void timerfd_reset(int timerfd, Chaos::Timestamp expired) {
-    std::int64_t msec =
-      expired.msec_since_epoch() - Chaos::Timestamp::now().msec_since_epoch();
-    if (msec < 100)
-      msec = 100;
+    std::int64_t millisec = expired.millisec_since_epoch() -
+      Chaos::Timestamp::now().millisec_since_epoch();
+    if (millisec < 100)
+      millisec = 100;
 
-    if (Chaos::timer::kern_settime(timerfd, msec) != 0)
+    if (Chaos::timer::kern_settime(timerfd, millisec) != 0)
       CHAOSLOG_SYSERR << "Unexposed::timerfd_reset";
   }
 }
