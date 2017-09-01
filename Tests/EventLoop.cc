@@ -52,5 +52,5 @@ CHAOS_TEST(EventLoop, Chaos::FakeTester) {
       });
   t.start();
 
-  Chaos::CurrentThread::sleep_usec(1000*1000);
+  Chaos::CurrentThread::sleep_microsec(1000*1000);
 }
