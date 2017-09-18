@@ -74,6 +74,10 @@ namespace socket {
   int set_option(int sockfd, int level, int optname, int optval);
   int get_option(
       int sockfd, int level, int optname, int* optval, socklen_t* optlen);
+  int set_option(int sockfd,
+      int level, int optname, const void* optval, socklen_t optlen);
+  int get_option(int sockfd,
+      int level, int optname, void* optval, socklen_t* optlen);
   int get_errno(int sockfd);
   struct sockaddr_in6 get_local(int sockfd);
   struct sockaddr_in6 get_peer(int sockfd);

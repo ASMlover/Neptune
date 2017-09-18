@@ -100,6 +100,16 @@ namespace socket {
       int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
     return getsockopt(sockfd, level, optname, (char*)optval, optlen);
   }
+
+  int set_option(int sockfd,
+      int level, int optname, const void* optval, socklen_t optlen) {
+    return setsockopt(sockfd, level, optname, (const char*)optval, optlen);
+  }
+
+  int get_option(int sockfd,
+      int level, int optname, void* optval, socklen_t* optlen) {
+    return getsockopt(sockfd, level, optname, (char*)optval, optlen);
+  }
 }
 
 namespace addr {
