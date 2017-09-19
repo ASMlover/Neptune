@@ -86,8 +86,15 @@ namespace socket {
     return ::readv(sockfd, iov, niov);
   }
 
-  void set_nonblock(int sockfd) {
-    // non-block
+  void set_blocking(int sockfd) {
+    // blocking
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    flags &= ~O_NONBLOCK;
+    fcntl(sockfd, F_SETFL, flags);
+  }
+
+  void set_nonblocking(int sockfd) {
+    // non-blocking
     int flags = fcntl(sockfd, F_GETFL, 0);
     flags |= O_NONBLOCK;
     fcntl(sockfd, F_SETFL, flags);
@@ -103,8 +110,8 @@ namespace socket {
         sockfd, level, optname, (const void*)&optval, sizeof(optval));
   }
 
-  int get_option(
-      int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
+  int get_option(int sockfd,
+      int level, int optname, int* optval, socklen_t* optlen) {
     return getsockopt(sockfd, level, optname, optval, optlen);
   }
 

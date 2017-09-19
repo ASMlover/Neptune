@@ -70,10 +70,11 @@ namespace socket {
   ssize_t write(int sockfd, const void* buf, std::size_t len);
   void set_iovec(Iovec_t& vec, char* buf, std::size_t len);
   ssize_t readv(int sockfd, int niov, Iovec_t* iov);
-  void set_nonblock(int sockfd);
+  void set_blocking(int sockfd);
+  void set_nonblocking(int sockfd);
   int set_option(int sockfd, int level, int optname, int optval);
-  int get_option(
-      int sockfd, int level, int optname, int* optval, socklen_t* optlen);
+  int get_option(int sockfd,
+      int level, int optname, int* optval, socklen_t* optlen);
   int set_option(int sockfd,
       int level, int optname, const void* optval, socklen_t optlen);
   int get_option(int sockfd,

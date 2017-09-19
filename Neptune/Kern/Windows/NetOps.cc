@@ -86,7 +86,12 @@ namespace socket {
     return static_cast<ssize_t>(read_bytes);
   }
 
-  void set_nonblock(int sockfd) {
+  void set_blocking(int sockfd) {
+    u_long val{0};
+    ioctlsocket(sockfd, FIONBIO, &val);
+  }
+
+  void set_nonblocking(int sockfd) {
     u_long val{1};
     ioctlsocket(sockfd, FIONBIO, &val);
   }
@@ -96,8 +101,8 @@ namespace socket {
         level, optname, (const char*)&optval, sizeof(optval));
   }
 
-  int get_option(
-      int sockfd, int level, int optname, int* optval, socklen_t* optlen) {
+  int get_option(int sockfd,
+      int level, int optname, int* optval, socklen_t* optlen) {
     return getsockopt(sockfd, level, optname, (char*)optval, optlen);
   }
 

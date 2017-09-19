@@ -46,7 +46,7 @@ namespace socket {
     int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0)
       CHAOSLOG_SYSFATAL << "SocketFd::open - create socket failed";
-    socket::set_nonblock(sockfd);
+    socket::set_nonblocking(sockfd);
 
     return sockfd;
   }
@@ -71,7 +71,7 @@ namespace socket {
   int accept(int sockfd, struct sockaddr_in6* addr) {
     socklen_t addrlen = static_cast<socklen_t>(sizeof(*addr));
     int connfd = ::accept(sockfd, addr::cast(addr), &addrlen);
-    socket::set_nonblock(connfd);
+    socket::set_nonblocking(connfd);
 
     if (connfd < 0) {
       int saved_errno = errno;
