@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_WAKEUPSIGNALER_H
 #define NEPTUNE_WAKEUPSIGNALER_H
 
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 
 #if defined(CHAOS_WINDOWS)
 # include <Neptune/Windows/WakeupSignaler.h>

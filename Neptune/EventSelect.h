@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_EVENTSELECT_H
 #define NEPTUNE_EVENTSELECT_H
 
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 
 #if defined(CHAOS_WINDOWS)
 # include <Neptune/Windows/EventSelect.h>

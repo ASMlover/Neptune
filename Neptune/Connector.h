@@ -29,7 +29,7 @@
 
 #include <functional>
 #include <memory>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Neptune/InetAddress.h>
 #include <Neptune/Timer.h>
 

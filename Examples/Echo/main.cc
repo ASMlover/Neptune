@@ -26,7 +26,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 #include <cstring>
 #include <iostream>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Neptune/InetAddress.h>
 #include <Neptune/EventLoop.h>
 #include "echo.h"

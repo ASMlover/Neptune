@@ -30,7 +30,7 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Datetime/Timestamp.h>
 
 namespace Neptune {

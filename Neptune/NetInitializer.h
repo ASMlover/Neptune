@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_NETINITIALIZER_H
 #define NEPTUNE_NETINITIALIZER_H
 
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 
 #if defined(CHAOS_WINDOWS)
 # include <Neptune/Windows/NetInitializer.h>

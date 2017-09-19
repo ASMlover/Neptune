@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_KERN_NETOPS_H
 #define NEPTUNE_KERN_NETOPS_H
 
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 #if defined(CHAOS_WINDOWS)
 # include <WS2tcpip.h>
 # if !defined(_WINDOWS_)

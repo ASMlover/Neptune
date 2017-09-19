@@ -30,7 +30,7 @@
 #include <cassert>
 #include <cerrno>
 #include <cstring>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Channel.h>
 #include <Neptune/Windows/EventSelect.h>

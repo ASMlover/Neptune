@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_SOCKET_H
 #define NEPTUNE_SOCKET_H
 
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 
 namespace Neptune {
 

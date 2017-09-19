@@ -29,7 +29,7 @@
 
 #include <memory>
 #include <string>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Container/StringPiece.h>
 #include <Chaos/Datetime/Timestamp.h>
 #include <Chaos/Utility/Any.h>

@@ -25,8 +25,8 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
-#include <Chaos/Platform.h>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Platform.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Kern/NetOps.h>
 #include <Neptune/EventLoop.h>

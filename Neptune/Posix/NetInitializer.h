@@ -27,7 +27,7 @@
 #ifndef NEPTUNE_POSIX_NETINITIALIZER_H
 #define NEPTUNE_POSIX_NETINITIALIZER_H
 
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 
 namespace Neptune {
 

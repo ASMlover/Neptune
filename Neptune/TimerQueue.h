@@ -30,7 +30,7 @@
 #include <cstdint>
 #include <set>
 #include <vector>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Datetime/Timestamp.h>
 #include <Neptune/Callbacks.h>
 #include <Neptune/Channel.h>

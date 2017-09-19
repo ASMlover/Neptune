@@ -27,14 +27,14 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 #if defined(CHAOS_WINDOWS)
 # include <WS2tcpip.h>
 # if !defined(_WINDOWS_)
 #   include <WinSock2.h>
 # endif
 #endif
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Endian.h>
 #include <Neptune/Kern/NetOps.h>

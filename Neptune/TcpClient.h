@@ -29,7 +29,7 @@
 
 #include <memory>
 #include <string>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Concurrent/Mutex.h>
 #include <Neptune/Callbacks.h>
 

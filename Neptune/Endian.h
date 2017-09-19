@@ -28,7 +28,7 @@
 #define NEPTUNE_ENDIAN_H
 
 #include <cstdint>
-#include <Chaos/Platform.h>
+#include <Chaos/Base/Platform.h>
 
 #if defined(CHAOS_WINDOWS)
 # if CHAOS_BYTE_ORDER == CHAOS_LITTLE_ENDIAN

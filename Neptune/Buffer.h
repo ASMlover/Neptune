@@ -30,7 +30,7 @@
 #include <cstring>
 #include <algorithm>
 #include <vector>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Container/StringPiece.h>
 #include <Neptune/Endian.h>
 

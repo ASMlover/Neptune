@@ -28,8 +28,8 @@
 #define NEPTUNE_IGNORESIGPIPE_H
 
 #include <csignal>
-#include <Chaos/Platform.h>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/Platform.h>
+#include <Chaos/Base/UnCopyable.h>
 
 namespace Neptune {
 

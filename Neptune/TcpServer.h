@@ -31,7 +31,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Neptune/Callbacks.h>
 
 namespace Neptune {

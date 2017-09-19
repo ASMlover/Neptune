@@ -27,7 +27,7 @@
 #include <cassert>
 #include <cerrno>
 #include <algorithm>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Channel.h>
 #include <Neptune/EventPoll.h>

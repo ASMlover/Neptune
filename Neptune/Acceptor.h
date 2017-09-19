@@ -28,7 +28,7 @@
 #define NEPTUNE_ACCEPTOR_H
 
 #include <functional>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Neptune/Channel.h>
 #include <Neptune/Socket.h>
 

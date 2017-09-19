@@ -28,7 +28,7 @@
 #define NEPTUNE_INETADDRESS_H
 
 #include <string>
-#include <Chaos/Copyable.h>
+#include <Chaos/Base/Copyable.h>
 #include <Chaos/Container/StringPiece.h>
 #include <Neptune/Kern/NetOps.h>
 

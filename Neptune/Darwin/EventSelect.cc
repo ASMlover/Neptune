@@ -28,7 +28,7 @@
 #include <cerrno>
 #include <sys/types.h>
 #include <sys/select.h>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Kern/NetOps.h>
 #include <Neptune/Channel.h>

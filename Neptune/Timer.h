@@ -28,7 +28,7 @@
 #define NEPTUNE_TIMER_H
 
 #include <atomic>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Neptune/Callbacks.h>
 
 namespace Neptune {

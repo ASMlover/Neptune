@@ -29,7 +29,7 @@
 #include <poll.h>
 #include <sys/event.h>
 #include <unistd.h>
-#include <Chaos/Types.h>
+#include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Channel.h>
 #include <Neptune/Darwin/EventKqueue.h>

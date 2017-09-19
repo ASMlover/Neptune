@@ -29,7 +29,7 @@
 
 #include <map>
 #include <vector>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Datetime/Timestamp.h>
 
 namespace Neptune {

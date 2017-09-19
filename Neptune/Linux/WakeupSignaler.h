@@ -28,7 +28,7 @@
 #define NEPTUNE_LINUX_WAKEUPSIGNALER_H
 
 #include <cstddef>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 
 namespace Neptune {
 

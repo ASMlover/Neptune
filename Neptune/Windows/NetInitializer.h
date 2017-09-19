@@ -31,7 +31,7 @@
 # include <WinSock2.h>
 #endif
 #include <cstdint>
-#include <Chaos/UnCopyable.h>
+#include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Logging/Logging.h>
 
 namespace Neptune {
