@@ -64,12 +64,19 @@ public:
     return addr_.sin_family;
   }
 
+  void set_address(const struct sockaddr_in& addr4) {
+    addr_ = addr4;
+  }
+
   void set_address(const struct sockaddr_in6& addr6) {
     addr6_ = addr6;
   }
 
   const struct sockaddr* get_address(void) const {
-    return NetOps::addr::cast(&addr6_);
+    if (addr_.sin_family == AF_INET6)
+      return NetOps::addr::cast(&addr6_);
+    else
+      return NetOps::addr::cast(&addr_);
   }
 
   static bool resolve(Chaos::StringPiece hostname, InetAddress& result);
