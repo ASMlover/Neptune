@@ -31,28 +31,23 @@
 #include <Chaos/Base/Platform.h>
 
 #if defined(CHAOS_WINDOWS)
+# include <cstdlib>
 # if CHAOS_BYTE_ORDER == CHAOS_LITTLE_ENDIAN
-#   if !defined(_WINDOWS_)
-#     include <WinSock2.h>
-#   endif
-
-#   define htobe16(x) htons((x))
+#   define htobe16(x) _byteswap_ushort((x))
 #   define htole16(x) (x)
-#   define be16toh(x) ntohs((x))
+#   define be16toh(x) _byteswap_ushort((x))
 #   define le16toh(x) (x)
 
-#   define htobe32(x) htonl((x))
+#   define htobe32(x) _byteswap_ulong((x))
 #   define htole32(x) (x)
-#   define be32toh(x) ntohl((x))
+#   define be32toh(x) _byteswap_ulong((x))
 #   define le32toh(x) (x)
 
-#   define htobe64(x) htonll((x))
+#   define htobe64(x) _byteswap_uint64((x))
 #   define htole64(x) (x)
-#   define be64toh(x) ntohll((x))
+#   define be64toh(x) _byteswap_uint64((x))
 #   define le64toh(x) (x)
 # elif CHAOS_BYTE_ORDER == CHAOS_BIG_ENDIAN
-#   include <cstdlib>
-
 #   define htobe16(x) (x)
 #   define htole16(x) _byteswap_ushort((x))
 #   define be16toh(x) (x)
