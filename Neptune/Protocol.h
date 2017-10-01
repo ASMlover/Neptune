@@ -24,62 +24,93 @@
 // LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
-#ifndef NEPTUNE_INETADDRESS_H
-#define NEPTUNE_INETADDRESS_H
+#ifndef NEPTUNE_PROTOCOL_H
+#define NEPTUNE_PROTOCOL_H
 
-#include <string>
-#include <Chaos/Base/Copyable.h>
-#include <Chaos/Container/StringPiece.h>
 #include <Neptune/Kern/NetOps.h>
 
-namespace Neptune {
+namespace Neptune { namespace Protocol {
 
-class InetAddress : public Chaos::Copyable {
-  union {
-    struct sockaddr_in addr_;
-    struct sockaddr_in6 addr6_;
-  };
+class Tcp {
+  sa_family_t family_{};
+
+  explicit Tcp(sa_family_t family)
+    : family_(family) {
+  }
 public:
-  explicit InetAddress(const struct sockaddr_in& addr)
-    : addr_(addr) {
+  static Tcp v4(void) {
+    return Tcp(AF_INET);
   }
 
-  explicit InetAddress(const struct sockaddr_in6& addr6)
-    : addr6_(addr6) {
+  static Tcp v6(void) {
+    return Tcp(AF_INET6);
   }
 
-  InetAddress(
-      std::uint16_t port = 0, bool loopback_only = false, bool ipv6 = false);
-  InetAddress(Chaos::StringPiece ip, std::uint16_t port, bool ipv6 = false);
-  std::string get_host(void) const;
-  std::string get_host_port(void) const;
-  std::uint16_t get_port(void) const;
-  std::uint32_t get_host_endian(void) const;
-
-  std::uint16_t get_port_endian(void) const {
-    return addr_.sin_port;
+  static Tcp get_protocol(sa_family_t family) {
+    return Tcp(family);
   }
 
-  sa_family_t get_family(void) const {
-    return addr_.sin_family;
+  sa_family_t family(void) const {
+    return family_;
   }
 
-  void set_address(const struct sockaddr_in6& addr6) {
-    addr6_ = addr6;
+  int socket_type(void) const {
+    return SOCK_STREAM;
   }
 
-  const struct sockaddr* get_address(void) const {
-    return NetOps::addr::cast(&addr6_);
+  int protocol(void) const {
+    return IPPROTO_TCP;
   }
 
-  static bool resolve(Chaos::StringPiece hostname, InetAddress& result);
+  friend bool operator==(const Tcp& x, const Tcp& y) {
+    return x.family_ == y.family_;
+  }
+
+  friend bool operator!=(const Tcp& x, const Tcp& y) {
+    return x.family_ != y.family_;
+  }
 };
 
-template <typename ProtocolType>
-inline ProtocolType get_protocol(const InetAddress& addr) {
-  return ProtocolType::get_protocol(addr.get_family());
-}
+class Udp {
+  sa_family_t family_{};
 
-}
+  explicit Udp(sa_family_t family)
+    : family_(family) {
+  }
+public:
+  static Udp v4(void) {
+    return Udp(AF_INET);
+  }
 
-#endif // NEPTUNE_INETADDRESS_H
+  static Udp v6(void) {
+    return Udp(AF_INET6);
+  }
+
+  static Udp get_protocol(sa_family_t family) {
+    return Udp(family);
+  }
+
+  sa_family_t family(void) const {
+    return family_;
+  }
+
+  int socket_type(void) const {
+    return SOCK_DGRAM;
+  }
+
+  int protocol(void) const {
+    return IPPROTO_UDP;
+  }
+
+  friend bool operator==(const Udp& x, const Udp& y) {
+    return x.family_ == y.family_;
+  }
+
+  friend bool operator!=(const Udp& x, const Udp& y) {
+    return x.family_ != y.family_;
+  }
+};
+
+}}
+
+#endif // NEPTUNE_PROTOCOL_H
