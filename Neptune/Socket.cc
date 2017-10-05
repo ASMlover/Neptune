@@ -52,7 +52,7 @@ int Socket::accept(InetAddress& peer_addr) {
 }
 
 void Socket::shutdown_write(void) {
-  NetOps::socket::shutdown_write(sockfd_);
+  NetOps::socket::shutdown(sockfd_, NetOps::socket::SHUT_WRIT);
 }
 
 void Socket::set_tcp_nodelay(bool nodelay) {

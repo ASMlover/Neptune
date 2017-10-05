@@ -33,8 +33,6 @@
 
 namespace Neptune {
 
-static const in_addr_t kInAddrAny = INADDR_ANY;
-static const in_addr_t kInAddrLoopback = INADDR_LOOPBACK;
 static_assert(sizeof(InetAddress) == sizeof(struct sockaddr_in6),
     "InetAddress is same size as sockaddr_in6");
 #if defined(CHAOS_DARWIN)
@@ -57,27 +55,27 @@ InetAddress::InetAddress(std::uint16_t port, bool loopback_only, bool ipv6) {
   static_assert(offsetof(InetAddress, addr_) == 0, "addr_ offset must be 0");
   static_assert(offsetof(InetAddress, addr6_) == 0, "addr6_ offset must be 0");
   if (ipv6) {
-    memset(&addr6_, 0, sizeof(addr6_));
+    std::memset(&addr6_, 0, sizeof(addr6_));
     addr6_.sin6_family = AF_INET6;
     addr6_.sin6_addr = loopback_only ? in6addr_loopback : in6addr_any;
     addr6_.sin6_port = Neptune::h2n16(port);
   }
   else {
-    memset(&addr_, 0, sizeof(addr_));
+    std::memset(&addr_, 0, sizeof(addr_));
     addr_.sin_family = AF_INET;
     addr_.sin_addr.s_addr =
-      Neptune::h2n32(loopback_only ? kInAddrLoopback : kInAddrAny);
+      Neptune::h2n32(loopback_only ? INADDR_LOOPBACK : INADDR_ANY);
     addr_.sin_port = Neptune::h2n16(port);
   }
 }
 
 InetAddress::InetAddress(Chaos::StringPiece ip, std::uint16_t port, bool ipv6) {
   if (ipv6) {
-    memset(&addr6_, 0, sizeof(addr6_));
+    std::memset(&addr6_, 0, sizeof(addr6_));
     NetOps::addr::get_address(ip.data(), port, &addr6_);
   }
   else {
-    memset(&addr_, 0, sizeof(addr_));
+    std::memset(&addr_, 0, sizeof(addr_));
     NetOps::addr::get_address(ip.data(), port, &addr_);
   }
 }

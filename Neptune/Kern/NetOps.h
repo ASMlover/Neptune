@@ -34,14 +34,17 @@
 #   include <WinSock2.h>
 # endif
 
-  typedef int socklen_t;
-  typedef int sa_family_t;
-  typedef int in_addr_t;
-  typedef SSIZE_T ssize_t;
+  using socket_t = SOCKET;
+  using socklen_t = int;
+  using sa_family_t = int;
+  using in_addr_t = int;
+  using ssize_t = SSIZE_T;
 #else
 # include <netinet/tcp.h> // for TCP_NODELAY and etc
 # include <netdb.h> // for sockaddr_in6 and etc
 # include <poll.h>
+
+  using socklen_t = int;
 #endif
 #include <string>
 
@@ -56,11 +59,13 @@ namespace Neptune { namespace NetOps {
 #endif
 
 namespace socket {
+  static constexpr int SHUT_READ = 0;
+  static constexpr int SHUT_WRIT = 1;
+  static constexpr int SHUT_BOTH = 2;
+
   // socket operations wrapper
   int open(sa_family_t family);
-  int shutdown_read(int sockfd);
-  int shutdown_write(int sockfd);
-  int shutdown_all(int sockfd);
+  int shutdown(int sockfd, int how);
   int close(int sockfd);
   int bind(int sockfd, const struct sockaddr* addr);
   int listen(int sockfd);

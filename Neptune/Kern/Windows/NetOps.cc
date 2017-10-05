@@ -33,30 +33,6 @@
 namespace Neptune { namespace NetOps {
 
 namespace socket {
-  int shutdown_read(int sockfd) {
-    if (shutdown(sockfd, SD_RECEIVE) < 0) {
-      CHAOSLOG_SYSERR
-        << "NetOps::socket::shutdown_read - errno=" << get_errno(sockfd);
-    }
-    return 0;
-  }
-
-  int shutdown_write(int sockfd) {
-    if (shutdown(sockfd, SD_SEND) < 0) {
-      CHAOSLOG_SYSERR
-        << "NetOps::socket::shutdown_write - errno=" << get_errno(sockfd);
-    }
-    return 0;
-  }
-
-  int shutdown_all(int sockfd) {
-    if (shutdown(sockfd, SD_BOTH) < 0) {
-      CHAOSLOG_SYSERR
-        << "NetOps::socket::shutdown_all - errno=" << get_errno(sockfd);
-    }
-    return 0;
-  }
-
   int close(int sockfd) {
     if (closesocket(sockfd) < 0)
       CHAOSLOG_SYSERR << "NetOps::socket::close - errno=" << get_errno(sockfd);

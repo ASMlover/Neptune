@@ -51,6 +51,14 @@ namespace socket {
     return sockfd;
   }
 
+  int shutdown(int sockfd, int how) {
+    if (::shutdown(sockfd, how) < 0) {
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::shutdown - errno=" << get_errno(sockfd);
+    }
+    return 0;
+  }
+
   int bind(int sockfd, const struct sockaddr* addr) {
     socklen_t addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in6));
     if (::bind(sockfd, addr, addrlen) < 0) {
