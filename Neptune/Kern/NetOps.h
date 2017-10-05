@@ -50,6 +50,9 @@
 
 namespace Neptune { namespace NetOps {
 
+  static constexpr socket_t kInvalidSocket = (socket_t)(~0);
+  static constexpr int kSocketError = -1;
+
 #if defined(CHAOS_WINDOWS)
   typedef WSABUF Iovec_t;
   typedef WSAPOLLFD Pollfd_t;
@@ -64,30 +67,32 @@ namespace socket {
   static constexpr int SHUT_BOTH = 2;
 
   // socket operations wrapper
-  int open(sa_family_t family);
-  int shutdown(int sockfd, int how);
-  int close(int sockfd);
-  int bind(int sockfd, const struct sockaddr* addr);
-  int listen(int sockfd);
-  int accept(int sockfd, struct sockaddr_in6* addr);
-  int connect(int sockfd, const struct sockaddr* addr);
-  ssize_t read(int sockfd, std::size_t len, void* buf);
-  ssize_t write(int sockfd, const void* buf, std::size_t len);
+  socket_t open(sa_family_t family, int socket_type, int protocol);
+  socket_t open_tcp(sa_family_t family);
+  socket_t open_udp(sa_family_t family);
+  int shutdown(socket_t sockfd, int how);
+  int close(socket_t sockfd);
+  int bind(socket_t sockfd, const struct sockaddr* addr);
+  int listen(socket_t sockfd);
+  socket_t accept(socket_t sockfd, struct sockaddr_in* addr4);
+  socket_t accept(socket_t sockfd, struct sockaddr_in6* addr6);
+  int connect(socket_t sockfd, const struct sockaddr* addr);
+  ssize_t read(socket_t sockfd, std::size_t len, void* buf);
+  ssize_t write(socket_t sockfd, const void* buf, std::size_t len);
   void set_iovec(Iovec_t& vec, char* buf, std::size_t len);
-  ssize_t readv(int sockfd, int niov, Iovec_t* iov);
-  void set_blocking(int sockfd);
-  void set_nonblocking(int sockfd);
-  int set_option(int sockfd, int level, int optname, int optval);
-  int get_option(int sockfd,
+  ssize_t readv(socket_t sockfd, int niov, Iovec_t* iov);
+  void set_non_blocking(socket_t sockfd, bool mode = true);
+  int set_option(socket_t sockfd, int level, int optname, int optval);
+  int get_option(socket_t sockfd,
       int level, int optname, int* optval, socklen_t* optlen);
-  int set_option(int sockfd,
+  int set_option(socket_t sockfd,
       int level, int optname, const void* optval, socklen_t optlen);
-  int get_option(int sockfd,
+  int get_option(socket_t sockfd,
       int level, int optname, void* optval, socklen_t* optlen);
-  int get_errno(int sockfd);
-  struct sockaddr_in6 get_local(int sockfd);
-  struct sockaddr_in6 get_peer(int sockfd);
-  bool is_self_connect(int sockfd);
+  int get_errno(socket_t sockfd);
+  struct sockaddr_in6 get_local(socket_t sockfd);
+  struct sockaddr_in6 get_peer(socket_t sockfd);
+  bool is_self_connect(socket_t sockfd);
 }
 
 namespace addr {

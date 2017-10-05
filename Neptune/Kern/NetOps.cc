@@ -42,16 +42,27 @@
 namespace Neptune { namespace NetOps {
 
 namespace socket {
-  int open(sa_family_t family) {
-    int sockfd = ::socket(family, SOCK_STREAM, IPPROTO_TCP);
-    if (sockfd < 0)
-      CHAOSLOG_SYSFATAL << "SocketFd::open - create socket failed";
-    socket::set_nonblocking(sockfd);
+  socket_t open(sa_family_t family, int socket_type, int protocol) {
+    auto sockfd = ::socket(family, socket_type, protocol);
+    if (sockfd == kInvalidSocket)
+      CHAOSLOG_SYSFATAL << "NetOps::socket::open - call socket failed";
+    return sockfd;
+  }
+
+  socket_t open_tcp(sa_family_t family) {
+    auto sockfd = socket::open(family, SOCK_STREAM, IPPROTO_TCP);
+    socket::set_non_blocking(sockfd, true);
+    return sockfd;
+  }
+
+  socket_t open_udp(sa_family_t family) {
+    auto sockfd = socket::open(family, SOCK_DGRAM, IPPROTO_UDP);
+    socket::set_non_blocking(sockfd, true);
 
     return sockfd;
   }
 
-  int shutdown(int sockfd, int how) {
+  int shutdown(socket_t sockfd, int how) {
     if (::shutdown(sockfd, how) < 0) {
       CHAOSLOG_SYSERR
         << "NetOps::socket::shutdown - errno=" << get_errno(sockfd);
@@ -59,32 +70,34 @@ namespace socket {
     return 0;
   }
 
-  int bind(int sockfd, const struct sockaddr* addr) {
-    socklen_t addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in6));
+  int bind(socket_t sockfd, const struct sockaddr* addr) {
+    socklen_t addrlen{};
+    if (addr->sa_family == AF_INET6)
+      addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in6));
+    else
+      addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in));
     if (::bind(sockfd, addr, addrlen) < 0) {
       CHAOSLOG_SYSFATAL
-        << "SocketFd::bind - errno=" << socket::get_errno(sockfd);
+        << "NetOps::socket::bind - errno=" << socket::get_errno(sockfd);
     }
     return 0;
   }
 
-  int listen(int sockfd) {
+  int listen(socket_t sockfd) {
     if (::listen(sockfd, SOMAXCONN) < 0) {
       CHAOSLOG_SYSFATAL
-        << "SocketFd::listen - errno=" << socket::get_errno(sockfd);
+        << "NetOps::socket::listen - errno=" << socket::get_errno(sockfd);
     }
     return 0;
   }
 
-  int accept(int sockfd, struct sockaddr_in6* addr) {
-    socklen_t addrlen = static_cast<socklen_t>(sizeof(*addr));
-    int connfd = ::accept(sockfd, addr::cast(addr), &addrlen);
-    socket::set_nonblocking(connfd);
-
-    if (connfd < 0) {
+  socket_t accept(socket_t sockfd, struct sockaddr_in* addr4) {
+    socklen_t addrlen = static_cast<socklen_t>(sizeof(*addr4));
+    socket_t connfd = ::accept(sockfd, addr::cast(addr4), &addrlen);
+    if (connfd == kInvalidSocket) {
       int saved_errno = errno;
       CHAOSLOG_SYSERR
-        << "SocketFd::accept - accept failed, errno=" << saved_errno;
+        << "NetOps::socket::accept - accept failed, errno=" << saved_errno;
       switch (saved_errno) {
       case EAGAIN:
       case EINTR:
@@ -103,22 +116,67 @@ namespace socket {
       case ENOTSOCK:
       case EOPNOTSUPP:
         CHAOSLOG_SYSFATAL
-          << "SocketFd::accept - unexpected errno=" << saved_errno;
+          << "NetOps::socket::accept - unexpected errno=" << saved_errno;
         break;
       default:
-        CHAOSLOG_SYSFATAL << "SocketFd::accept - unknown errno=" << saved_errno;
+        CHAOSLOG_SYSFATAL
+          << "NetOps::socket::accept - unknown errno=" << saved_errno;
         break;
       }
     }
+    socket::set_non_blocking(connfd, true);
+
     return connfd;
   }
 
-  int connect(int sockfd, const struct sockaddr* addr) {
-    return ::connect(sockfd,
-        addr, static_cast<socklen_t>(sizeof(struct sockaddr_in6)));
+  socket_t accept(socket_t sockfd, struct sockaddr_in6* addr6) {
+    socklen_t addrlen = static_cast<socklen_t>(sizeof(*addr6));
+    socket_t connfd = ::accept(sockfd, addr::cast(addr6), &addrlen);
+    if (connfd == kInvalidSocket) {
+      int saved_errno = errno;
+      CHAOSLOG_SYSERR
+        << "NetOps::socket::accept - accept failed, errno=" << saved_errno;
+      switch (saved_errno) {
+      case EAGAIN:
+      case EINTR:
+      case EPERM:
+      case EMFILE:
+      case ECONNABORTED:
+      case EPROTO:
+        errno = saved_errno;
+        break;
+      case EBADF:
+      case EFAULT:
+      case EINVAL:
+      case ENFILE:
+      case ENOMEM:
+      case ENOBUFS:
+      case ENOTSOCK:
+      case EOPNOTSUPP:
+        CHAOSLOG_SYSFATAL
+          << "NetOps::socket::accept - unexpected errno=" << saved_errno;
+        break;
+      default:
+        CHAOSLOG_SYSFATAL
+          << "NetOps::socket::accept - unknown errno=" << saved_errno;
+        break;
+      }
+    }
+    socket::set_non_blocking(connfd, true);
+
+    return connfd;
   }
 
-  int get_errno(int sockfd) {
+  int connect(socket_t sockfd, const struct sockaddr* addr) {
+    socklen_t addrlen{};
+    if (addr->sa_family == AF_INET6)
+      addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in6));
+    else
+      addrlen = static_cast<socklen_t>(sizeof(struct sockaddr_in));
+    return ::connect(sockfd, addr, addrlen);
+  }
+
+  int get_errno(socket_t sockfd) {
     int optval{};
     socklen_t optlen = sizeof(optval);
     if (!socket::get_option(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen))
@@ -126,23 +184,23 @@ namespace socket {
     return optval;
   }
 
-  struct sockaddr_in6 get_local(int sockfd) {
+  struct sockaddr_in6 get_local(socket_t sockfd) {
     struct sockaddr_in6 addr{};
     socklen_t addrlen = static_cast<socklen_t>(sizeof(addr));
     if (::getsockname(sockfd, addr::cast(&addr), &addrlen) < 0)
-      CHAOSLOG_SYSERR << "SocketFd::get_local";
+      CHAOSLOG_SYSERR << "NetOps::socket::get_local - failed";
     return addr;
   }
 
-  struct sockaddr_in6 get_peer(int sockfd) {
+  struct sockaddr_in6 get_peer(socket_t sockfd) {
     struct sockaddr_in6 addr{};
     socklen_t addrlen = static_cast<socklen_t>(sizeof(addr));
     if (::getpeername(sockfd, addr::cast(&addr), &addrlen) < 0)
-      CHAOSLOG_SYSERR << "SocketFd::get_peer";
+      CHAOSLOG_SYSERR << "NetOps::socket::get_peer - failed";
     return addr;
   }
 
-  bool is_self_connect(int sockfd) {
+  bool is_self_connect(socket_t sockfd) {
     struct sockaddr_in6 local = socket::get_local(sockfd);
     struct sockaddr_in6 peer = socket::get_peer(sockfd);
     if (local.sin6_family == AF_INET) {

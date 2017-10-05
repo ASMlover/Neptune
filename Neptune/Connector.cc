@@ -86,7 +86,7 @@ void Connector::start_in_loop(void) {
 }
 
 void Connector::do_connect(void) {
-  int sockfd = NetOps::socket::open(server_addr_.get_family());
+  int sockfd = NetOps::socket::open_tcp(server_addr_.get_family());
   int r = NetOps::socket::connect(sockfd, server_addr_.get_address());
   int saved_errno = (r == 0) ? 0 : errno;
   switch (saved_errno) {

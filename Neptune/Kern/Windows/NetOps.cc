@@ -33,18 +33,18 @@
 namespace Neptune { namespace NetOps {
 
 namespace socket {
-  int close(int sockfd) {
-    if (closesocket(sockfd) < 0)
+  int close(socket_t sockfd) {
+    if (::closesocket(sockfd) < 0)
       CHAOSLOG_SYSERR << "NetOps::socket::close - errno=" << get_errno(sockfd);
     return 0;
   }
 
-  ssize_t read(int sockfd, std::size_t len, void* buf) {
-    return recv(sockfd, static_cast<char*>(buf), static_cast<int>(len), 0);
+  ssize_t read(socket_t sockfd, std::size_t len, void* buf) {
+    return ::recv(sockfd, static_cast<char*>(buf), static_cast<int>(len), 0);
   }
 
-  ssize_t write(int sockfd, const void* buf, std::size_t len) {
-    return send(sockfd,
+  ssize_t write(socket_t sockfd, const void* buf, std::size_t len) {
+    return ::send(sockfd,
         static_cast<const char*>(buf), static_cast<int>(len), 0);
   }
 
@@ -53,43 +53,38 @@ namespace socket {
     vec.len = static_cast<ULONG>(len);
   }
 
-  ssize_t readv(int sockfd, int niov, Iovec_t* iov) {
+  ssize_t readv(socket_t sockfd, int niov, Iovec_t* iov) {
     DWORD read_bytes = 0;
     DWORD flags = 0;
-    int rc = WSARecv(sockfd, iov, niov, &read_bytes, &flags, NULL, NULL);
-    if (rc == SOCKET_ERROR)
+    int rc = ::WSARecv(sockfd, iov, niov, &read_bytes, &flags, NULL, NULL);
+    if (rc == kSocketError)
       return rc;
     return static_cast<ssize_t>(read_bytes);
   }
 
-  void set_blocking(int sockfd) {
-    u_long val{0};
-    ioctlsocket(sockfd, FIONBIO, &val);
+  void set_non_blocking(socket_t sockfd, bool mode) {
+    u_long flags = mode ? 1 : 0;
+    ::ioctlsocket(sockfd, FIONBIO, &flags);
   }
 
-  void set_nonblocking(int sockfd) {
-    u_long val{1};
-    ioctlsocket(sockfd, FIONBIO, &val);
-  }
-
-  int set_option(int sockfd, int level, int optname, int optval) {
-    return setsockopt(sockfd,
+  int set_option(socket_t sockfd, int level, int optname, int optval) {
+    return ::setsockopt(sockfd,
         level, optname, (const char*)&optval, sizeof(optval));
   }
 
-  int get_option(int sockfd,
+  int get_option(socket_t sockfd,
       int level, int optname, int* optval, socklen_t* optlen) {
-    return getsockopt(sockfd, level, optname, (char*)optval, optlen);
+    return ::getsockopt(sockfd, level, optname, (char*)optval, optlen);
   }
 
-  int set_option(int sockfd,
+  int set_option(socket_t sockfd,
       int level, int optname, const void* optval, socklen_t optlen) {
-    return setsockopt(sockfd, level, optname, (const char*)optval, optlen);
+    return ::setsockopt(sockfd, level, optname, (const char*)optval, optlen);
   }
 
-  int get_option(int sockfd,
+  int get_option(socket_t sockfd,
       int level, int optname, void* optval, socklen_t* optlen) {
-    return getsockopt(sockfd, level, optname, (char*)optval, optlen);
+    return ::getsockopt(sockfd, level, optname, (char*)optval, optlen);
   }
 }
 
