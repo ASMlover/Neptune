@@ -34,6 +34,7 @@
 #endif
 #include <Chaos/Logging/Logging.h>
 #include <Neptune/Endian.h>
+#include <Neptune/Kern/InternalNetTypes.h>
 #include <Neptune/Kern/NetOps.h>
 
 namespace Neptune { namespace NetOps {

@@ -27,39 +27,10 @@
 #ifndef NEPTUNE_KERN_NETOPS_H
 #define NEPTUNE_KERN_NETOPS_H
 
-#include <Chaos/Base/Platform.h>
-#if defined(CHAOS_WINDOWS)
-# include <WS2tcpip.h>
-# if !defined(_WINDOWS_)
-#   include <WinSock2.h>
-# endif
-
-  using socket_t = SOCKET;
-  using socklen_t = int;
-  using sa_family_t = int;
-  using in_addr_t = int;
-  using ssize_t = SSIZE_T;
-#else
-# include <netinet/tcp.h> // for TCP_NODELAY and etc
-# include <netdb.h> // for sockaddr_in6 and etc
-# include <poll.h>
-
-  using socklen_t = int;
-#endif
 #include <string>
+#include <Neptune/Kern/NetTypes.h>
 
 namespace Neptune { namespace NetOps {
-
-  static constexpr socket_t kInvalidSocket = (socket_t)(~0);
-  static constexpr int kSocketError = -1;
-
-#if defined(CHAOS_WINDOWS)
-  typedef WSABUF Iovec_t;
-  typedef WSAPOLLFD Pollfd_t;
-#else
-  typedef struct iovec Iovec_t;
-  typedef struct pollfd Pollfd_t;
-#endif
 
 namespace socket {
   static constexpr int SHUT_READ = 0;

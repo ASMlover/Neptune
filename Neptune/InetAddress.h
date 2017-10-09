@@ -30,6 +30,7 @@
 #include <string>
 #include <Chaos/Base/Copyable.h>
 #include <Chaos/Container/StringPiece.h>
+#include <Neptune/Kern/InternalNetTypes.h>
 #include <Neptune/Kern/NetOps.h>
 
 namespace Neptune {

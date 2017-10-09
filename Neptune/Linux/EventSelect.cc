@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <sys/types.h>
 #include <Chaos/Logging/Logging.h>
+#include <Neptune/Kern/InternalNetTypes.h>
 #include <Neptune/Kern/NetOps.h>
 #include <Neptune/Channel.h>
 #include <Neptune/Linux/EventSelect.h>

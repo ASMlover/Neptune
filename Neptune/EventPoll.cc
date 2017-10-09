@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <Chaos/Base/Types.h>
 #include <Chaos/Logging/Logging.h>
+#include <Neptune/Kern/InternalNetTypes.h>
 #include <Neptune/Channel.h>
 #include <Neptune/EventPoll.h>
 
