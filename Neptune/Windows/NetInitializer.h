@@ -27,9 +27,7 @@
 #ifndef NEPTUNE_WINDOWS_NETINITIALIZER_H
 #define NEPTUNE_WINDOWS_NETINITIALIZER_H
 
-#if !defined(_WINDOWS_)
-# include <WinSock2.h>
-#endif
+#include <Neptune/Kern/InternalNetTypes.h>
 #include <cstdint>
 #include <Chaos/Base/UnCopyable.h>
 #include <Chaos/Logging/Logging.h>

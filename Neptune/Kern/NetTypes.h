@@ -41,16 +41,10 @@
   using socklen_t = int;
   using sa_family_t = int;
   using in_addr_t = std::uint32_t;
-
-  struct __WSABUF;
-  struct pollfd;
 #else
 # include <sys/types.h>
 # include <sys/socket.h>
   using socket_t = int;
-
-  struct iovec;
-  struct pollfd;
 #endif
 struct sockaddr;
 struct sockaddr_in;
@@ -62,12 +56,21 @@ static constexpr socket_t kInvalidSocket = (socket_t)(~0);
 static constexpr int kSocketError = -1;
 
 #if defined(CHAOS_WINDOWS)
-  using Iovec_t = struct __WSABUF;
-  using Pollfd_t = struct pollfd;
+  struct Iovec_t {
+    unsigned long len;
+    char* buf;
+  };
 #else
-  using Iovec_t = struct iovec;
-  using Pollfd_t = struct pollfd;
+  struct Iovec_t {
+    void* iov_base;
+    std::size_t iov_len;
+  };
 #endif
+  struct Pollfd_t {
+    socket_t fd;
+    short events;
+    short revents;
+  };
 
 }}
 

@@ -56,7 +56,8 @@ namespace socket {
   ssize_t readv(socket_t sockfd, int niov, Iovec_t* iov) {
     DWORD read_bytes = 0;
     DWORD flags = 0;
-    int rc = ::WSARecv(sockfd, iov, niov, &read_bytes, &flags, NULL, NULL);
+    int rc = ::WSARecv(sockfd,
+        (WSABUF*)iov, niov, &read_bytes, &flags, NULL, NULL);
     if (rc == kSocketError)
       return rc;
     return static_cast<ssize_t>(read_bytes);
@@ -93,11 +94,11 @@ namespace addr {
     char buf[64]{};
     if (addr->sa_family == AF_INET) {
       const struct sockaddr_in* addr4 = to_v4(addr);
-      InetNtopA(AF_INET, (PVOID)&addr4->sin_addr, buf, sizeof(buf));
+      ::InetNtopA(AF_INET, (PVOID)&addr4->sin_addr, buf, sizeof(buf));
     }
     else if (addr->sa_family == AF_INET6) {
       const struct sockaddr_in6* addr6 = to_v6(addr);
-      InetNtopA(AF_INET6, (PVOID)&addr6->sin6_addr, buf, sizeof(buf));
+      ::InetNtopA(AF_INET6, (PVOID)&addr6->sin6_addr, buf, sizeof(buf));
     }
     return buf;
   }
@@ -106,7 +107,7 @@ namespace addr {
       const char* ip, std::uint16_t port, struct sockaddr_in* addr) {
     addr->sin_family = AF_INET;
     addr->sin_port = Neptune::h2n16(port);
-    if (InetPtonA(AF_INET, ip, &addr->sin_addr) <= 0)
+    if (::InetPtonA(AF_INET, ip, &addr->sin_addr) <= 0)
       CHAOSLOG_SYSERR << "NetOps::addr::get_address(ipv4) - failed";
   }
 
@@ -114,13 +115,13 @@ namespace addr {
       const char* ip, std::uint16_t port, struct sockaddr_in6* addr) {
     addr->sin6_family = AF_INET6;
     addr->sin6_port = Neptune::h2n16(port);
-    if (InetPtonA(AF_INET6, ip, &addr->sin6_addr) <= 0)
+    if (::InetPtonA(AF_INET6, ip, &addr->sin6_addr) <= 0)
       CHAOSLOG_SYSERR << "NetOps::addr::get_address(ipv6) - failed";
   }
 }
 
 int poll(Pollfd_t fds[], std::uint32_t nfds, int timeout) {
-  return WSAPoll(fds, (ULONG)nfds, timeout);
+  return ::WSAPoll((WSAPOLLFD*)fds, (ULONG)nfds, timeout);
 }
 
 }}

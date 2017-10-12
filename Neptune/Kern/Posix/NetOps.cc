@@ -60,7 +60,7 @@ namespace socket {
   }
 
   ssize_t readv(socket_t sockfd, int niov, Iovec_t* iov) {
-    return ::readv(sockfd, iov, niov);
+    return ::readv(sockfd, (const struct iovec*)iov, niov);
   }
 
   void set_non_blocking(socket_t sockfd, bool mode) {
@@ -132,7 +132,7 @@ namespace addr {
 }
 
 inline int poll(Pollfd_t fds[], std::uint32_t nfds, int timeout) {
-  return ::poll(fds, (nfds_t)nfds, timeout);
+  return ::poll((struct pollfd*)fds, (nfds_t)nfds, timeout);
 }
 
 }}
