@@ -58,8 +58,8 @@ void WakeupSignaler::open_signaler(void) {
       << "WakeupSignaler::open_signaler - create pipe failed, errno=" << errno;
   }
 
-  Neptune::NetOps::socket::set_nonblocking(pipefds_[0]);
-  Neptune::NetOps::socket::set_nonblocking(pipefds_[1]);
+  Neptune::NetOps::socket::set_non_blocking(pipefds_[0]);
+  Neptune::NetOps::socket::set_non_blocking(pipefds_[1]);
 }
 
 void WakeupSignaler::close_signaler(void) {
