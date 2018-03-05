@@ -45,7 +45,7 @@ set(NEPTUNE_VERSION_STRING "${NEPTUNE_MAJOR_VERSION}.${NEPTUNE_MINOR_VERSION}.${
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "choose build type [Debug|Release|RelWithDebInfo|MinSizeRel]" FORCE)
 endif()
-message(STATUS "`NeptunePROJ` CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "`${PROJECT_NAME}` CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 # build all binaries into a specified directory
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -97,7 +97,7 @@ else()
   set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
 endif()
 string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
-message(STATUS "`NeptunePROJ` CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BUILD_TYPE}}")
+message(STATUS "`${PROJECT_NAME}` CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BUILD_TYPE}}")
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/External/Chaos)
